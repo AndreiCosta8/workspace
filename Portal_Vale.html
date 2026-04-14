@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Workspace · Loja Parauapebas</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<style>
+:root{
+  --navy:#060e1c;--card:#0b1830;--card2:#0f1f38;--border:#1a3255;
+  --gold:#f5c418;--blue:#3b8fd4;--green:#22c97a;--red:#e8503a;
+  --amber:#f0a020;--purple:#9b72e8;--text:#cce0f5;--muted:#4d7a9e;
+  --faint:#040a14;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── FUNDO ANIMADO ─────────────────────────── */
+.bg-grid{position:fixed;inset:0;background-image:linear-gradient(rgba(59,143,212,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(59,143,212,.04) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+.bg-glow{position:fixed;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(245,196,24,.06) 0%,transparent 70%);top:-200px;right:-100px;pointer-events:none;z-index:0;animation:glowMove 8s ease-in-out infinite alternate}
+.bg-glow2{position:fixed;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(59,143,212,.05) 0%,transparent 70%);bottom:-100px;left:-100px;pointer-events:none;z-index:0;animation:glowMove2 10s ease-in-out infinite alternate}
+@keyframes glowMove{from{transform:translate(0,0)}to{transform:translate(-60px,80px)}}
+@keyframes glowMove2{from{transform:translate(0,0)}to{transform:translate(40px,-60px)}}
+
+/* ── TELA DE LOGIN ─────────────────────────── */
+#screen-login{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:100%;max-width:400px;position:relative;z-index:1;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:28px}
+.login-logo-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),#e8a800);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.login-logo-text{font-size:15px;font-weight:700;color:var(--gold);line-height:1.2}
+.login-logo-sub{font-size:10px;color:var(--muted);font-weight:400;text-transform:uppercase;letter-spacing:.5px}
+.login-title{font-size:22px;font-weight:700;color:#fff;margin-bottom:6px}
+.login-sub{font-size:12px;color:var(--muted);margin-bottom:28px}
+.form-group{margin-bottom:14px}
+.form-group label{display:block;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.form-group input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--text);font-family:'Sora',sans-serif;outline:none;transition:border-color .15s}
+.form-group input:focus{border-color:rgba(245,196,24,.5)}
+.form-group input::placeholder{color:var(--muted)}
+.btn-login{width:100%;background:linear-gradient(135deg,var(--gold),#e8a800);color:#000;font-weight:700;font-size:13px;padding:13px;border:none;border-radius:10px;cursor:pointer;font-family:'Sora',sans-serif;transition:transform .12s,opacity .12s;margin-top:4px}
+.btn-login:hover{opacity:.92;transform:translateY(-1px)}
+.btn-login:active{transform:translateY(0)}
+.login-err{background:rgba(232,80,58,.12);border:1px solid rgba(232,80,58,.3);border-radius:8px;padding:9px 12px;font-size:11px;color:var(--red);margin-top:10px;display:none}
+.login-loading{text-align:center;font-size:12px;color:var(--muted);margin-top:10px;display:none}
+.forgot-link{text-align:center;margin-top:14px;font-size:11px;color:var(--muted)}
+.forgot-link a{color:var(--gold);text-decoration:none;cursor:pointer}
+.forgot-link a:hover{text-decoration:underline}
+
+/* ── PORTAL PRINCIPAL ──────────────────────── */
+#screen-portal{display:none;position:relative;z-index:1;min-height:100vh}
+
+/* Topbar */
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:12px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.tb-brand{display:flex;align-items:center;gap:10px}
+.tb-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--gold),#e8a800);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.tb-name{font-size:13px;font-weight:700;color:var(--gold)}
+.tb-sub{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.tb-right{display:flex;align-items:center;gap:12px}
+.tb-user{display:flex;align-items:center;gap:8px}
+.tb-avatar{width:30px;height:30px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.tb-uname{font-size:11px;color:var(--muted)}
+.btn-logout{background:rgba(232,80,58,.1);border:1px solid rgba(232,80,58,.25);color:var(--red);font-size:10px;padding:5px 10px;border-radius:6px;cursor:pointer;font-family:'Sora',sans-serif;transition:all .12s}
+.btn-logout:hover{background:rgba(232,80,58,.2)}
+.tb-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
+
+/* Hero */
+.hero{padding:48px 24px 32px;max-width:1200px;margin:0 auto}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(245,196,24,.08);border:1px solid rgba(245,196,24,.2);border-radius:20px;padding:4px 12px;font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px}
+.hero-title{font-size:clamp(28px,4vw,44px);font-weight:800;color:#fff;line-height:1.15;margin-bottom:10px}
+.hero-title em{font-style:normal;color:var(--gold)}
+.hero-sub{font-size:13px;color:var(--muted);max-width:520px;line-height:1.6;margin-bottom:32px}
+.stats-row{display:flex;gap:0;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:inline-flex}
+.stat{padding:14px 24px;text-align:center}
+.stat-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)}
+.stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.stat-div{width:1px;background:var(--border)}
+
+/* Apps Grid */
+.content{padding:0 24px 48px;max-width:1200px;margin:0 auto}
+.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+.sec-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.sec-line{flex:1;height:1px;background:var(--border)}
+.sec-count{font-size:10px;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:2px 8px}
+
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:40px}
+
+.app-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;text-decoration:none;color:var(--text);display:block;position:relative;overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s;cursor:pointer}
+.app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--gold));opacity:.7;border-radius:16px 16px 0 0}
+.app-card:hover{transform:translateY(-3px);border-color:var(--accent,var(--gold));box-shadow:0 8px 32px rgba(0,0,0,.3)}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.card-icon{width:44px;height:44px;background:rgba(255,255,255,.05);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.card-badge{font-size:9px;padding:3px 8px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
+.badge-live{background:rgba(34,201,122,.12);color:var(--green);border:1px solid rgba(34,201,122,.25)}
+.badge-new{background:rgba(155,114,232,.12);color:var(--purple);border:1px solid rgba(155,114,232,.25)}
+.badge-mobile{background:rgba(59,143,212,.12);color:var(--blue);border:1px solid rgba(59,143,212,.25)}
+.card-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:5px}
+.card-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:16px}
+.card-footer{display:flex;align-items:center;justify-content:space-between}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap}
+.tag{font-size:9px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;color:var(--muted)}
+.card-arrow{font-size:16px;color:var(--muted);transition:transform .15s,color .15s}
+.app-card:hover .card-arrow{transform:translateX(4px);color:var(--accent,var(--gold))}
+
+/* Card desabilitado */
+.app-card.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
+
+/* Updates */
+.updates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.update-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.update-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.update-text{font-size:11px;color:var(--muted);line-height:1.5}
+.update-text strong{color:var(--text);display:block;margin-bottom:2px}
+.update-time{font-size:9px;color:var(--muted);margin-top:3px;font-family:'JetBrains Mono',monospace}
+
+/* Loading overlay */
+#loading-overlay{position:fixed;inset:0;background:var(--navy);z-index:200;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-size:12px;color:var(--muted)}
+
+/* Modal senha */
+#modal-pwd{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:150;display:none;align-items:center;justify-content:center;padding:20px}
+#modal-pwd.open{display:flex}
+.pwd-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:28px;width:100%;max-width:360px;animation:fadeUp .25s ease}
+
+@media(max-width:600px){
+  .hero{padding:32px 16px 24px}
+  .content{padding:0 16px 32px}
+  .stats-row{flex-wrap:wrap}
+  .topbar{padding:10px 16px}
+  .tb-date{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+<div class="bg-glow2"></div>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text">Verificando acesso...</div>
+</div>
+
+<!-- ══ TELA DE LOGIN ══════════════════════════════════ -->
+<div id="screen-login">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-icon">⚙️</div>
+      <div>
+        <div class="login-logo-text">Workspace</div>
+        <div class="login-logo-sub">Loja Parauapebas · Vale S.A.</div>
+      </div>
+    </div>
+    <div class="login-title">Bem-vindo de volta</div>
+    <div class="login-sub">Acesse com seu e-mail e senha</div>
+    <div class="form-group">
+      <label>E-mail</label>
+      <input type="email" id="inp-email" placeholder="seu@email.com" autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label>Senha</label>
+      <input type="password" id="inp-pwd" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="btn-login" onclick="doLogin()">Entrar no Workspace</button>
+    <div class="login-err" id="login-err"></div>
+    <div class="login-loading" id="login-loading">Autenticando...</div>
+    <div class="forgot-link">
+      <a onclick="doForgot()">Esqueci minha senha</a>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PORTAL PRINCIPAL ═══════════════════════════════ -->
+<div id="screen-portal">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="tb-brand">
+      <div class="tb-icon">⚙️</div>
+      <div>
+        <div class="tb-name">Workspace · Parauapebas</div>
+        <div class="tb-sub">Vale S.A. · Plataforma Interna</div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-date" id="tb-date">—</div>
+      <div class="tb-user">
+        <div class="tb-avatar" id="tb-avatar">AC</div>
+        <div class="tb-uname" id="tb-uname">—</div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">Sair</button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-tag">🏭 Plataforma Interna</div>
+    <h1 class="hero-title">Central de<br><em>Ferramentas</em></h1>
+    <p class="hero-sub">Acesso rápido a todos os sistemas da equipe — pedidos, EPI, testes e visitas. Tudo em um único lugar com dados em tempo real.</p>
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-val">4</div>
+        <div class="stat-lbl">Sistemas<br>Ativos</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat">
+        <div class="stat-val">Firebase</div>
+        <div class="stat-lbl">Tempo<br>Real</div>
+      </div>
+      <div class="stat-div"></div>
+      <div class="stat">
+        <div class="stat-val" id="stat-date">—</div>
+        <div class="stat-lbl">Data<br>Hoje</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTEÚDO -->
+  <div class="content">
+
+    <!-- SISTEMAS -->
+    <div class="sec-head">
+      <div class="sec-title">Sistemas Disponíveis</div>
+      <div class="sec-line"></div>
+      <div class="sec-count">4 ativos</div>
+    </div>
+
+    <div class="apps-grid">
+
+      <!-- PEDIDOS VALE -->
+      <a class="app-card" href="https://andreicosta8.github.io/pedidos-vale" target="_blank" style="--accent:var(--gold)">
+        <div class="card-top">
+          <div class="card-icon">📊</div>
+          <span class="card-badge badge-live">● Ao vivo</span>
+        </div>
+        <div class="card-title">BI · Pedidos Vale</div>
+        <div class="card-desc">Dashboard OTIFF · ONTIME · IN FULL. Controle completo de pedidos, faturamento, prazos e tratativas com alertas automáticos.</div>
+        <div class="card-footer">
+          <div class="card-tags">
+            <span class="tag">OTIFF</span>
+            <span class="tag">Firebase</span>
+            <span class="tag">301 pedidos</span>
+          </div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- EPI MANAGER -->
+      <a class="app-card" href="https://andreicosta8.github.io/epi-manager" target="_blank" style="--accent:var(--green)">
+        <div class="card-top">
+          <div class="card-icon">🦺</div>
+          <span class="card-badge badge-live">● Ao vivo</span>
+        </div>
+        <div class="card-title">Gestão de Estoque EPI</div>
+        <div class="card-desc">Controle de estoque de EPIs, movimentações, alertas de reposição e relatórios por produto e categoria.</div>
+        <div class="card-footer">
+          <div class="card-tags">
+            <span class="tag">Estoque</span>
+            <span class="tag">Firebase</span>
+            <span class="tag">Alertas</span>
+          </div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- UNILUVAS TESTES -->
+      <a class="app-card" href="https://andreicosta8.github.io/uniluvas_epi" target="_blank" style="--accent:var(--purple)">
+        <div class="card-top">
+          <div class="card-icon">🧪</div>
+          <span class="card-badge badge-live">● Ao vivo</span>
+        </div>
+        <div class="card-title">Uniluvas · Fichas de Teste</div>
+        <div class="card-desc">Plataforma de acesso e gestão de fichas de teste de EPIs. Registro de resultados, aprovações e histórico por produto.</div>
+        <div class="card-footer">
+          <div class="card-tags">
+            <span class="tag">Testes</span>
+            <span class="tag">Firebase</span>
+            <span class="tag">EmailJS</span>
+          </div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- VISITAS PRO -->
+      <a class="app-card" href="https://andreicosta8.github.io/visitaspro" target="_blank" style="--accent:var(--blue)">
+        <div class="card-top">
+          <div class="card-icon">🗺️</div>
+          <span class="card-badge badge-mobile">📱 Mobile</span>
+        </div>
+        <div class="card-title">VisitasPRO</div>
+        <div class="card-desc">Controle pessoal de visitas a clientes. Agendamento, histórico por cliente, relatórios e exportação CSV.</div>
+        <div class="card-footer">
+          <div class="card-tags">
+            <span class="tag">Visitas</span>
+            <span class="tag">Firebase</span>
+            <span class="tag">WhatsApp</span>
+          </div>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- ATUALIZAÇÕES -->
+    <div class="sec-head">
+      <div class="sec-title">Últimas Atualizações</div>
+      <div class="sec-line"></div>
+    </div>
+    <div class="updates-grid">
+      <div class="update-item">
+        <div class="update-dot" style="background:var(--gold)"></div>
+        <div class="update-text">
+          <strong>BI Pedidos Vale</strong>
+          OTIFF/ONTIME por linha · Alertas de prazo 30d · Devolução IN FULL · Filtros dashboard por UF, planta e classe
+          <div class="update-time">Abr 2026</div>
+        </div>
+      </div>
+      <div class="update-item">
+        <div class="update-dot" style="background:var(--blue)"></div>
+        <div class="update-text">
+          <strong>VisitasPRO</strong>
+          Firebase granular por item · Status Reagendada · Taxa de realização · Último contato na lista de clientes
+          <div class="update-time">Abr 2026</div>
+        </div>
+      </div>
+      <div class="update-item">
+        <div class="update-dot" style="background:var(--green)"></div>
+        <div class="update-text">
+          <strong>Portal Workspace</strong>
+          Login com Firebase Auth · Acesso centralizado aos 4 sistemas · Suporte mobile e desktop
+          <div class="update-time">Abr 2026</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL RESET SENHA -->
+<div id="modal-pwd">
+  <div class="pwd-card">
+    <div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">Redefinir senha</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:16px">Enviaremos um link de redefinição para o seu e-mail</div>
+    <div class="form-group" style="margin-bottom:16px">
+      <label>E-mail</label>
+      <input type="email" id="reset-email" placeholder="seu@email.com"/>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button onclick="document.getElementById('modal-pwd').classList.remove('open')" style="flex:1;background:var(--card2);border:1px solid var(--border);color:var(--muted);padding:10px;border-radius:8px;cursor:pointer;font-family:'Sora',sans-serif;font-size:12px">Cancelar</button>
+      <button onclick="sendReset()" style="flex:1;background:var(--gold);border:none;color:#000;padding:10px;border-radius:8px;cursor:pointer;font-family:'Sora',sans-serif;font-size:12px;font-weight:700">Enviar</button>
+    </div>
+    <div id="reset-msg" style="font-size:11px;color:var(--green);margin-top:10px;display:none"></div>
+  </div>
+</div>
+
+<script>
+// ── FIREBASE CONFIG ────────────────────────────────────────────
+// Usando o projeto pedidos-vale para autenticação
+const firebaseConfig = {
+  apiKey: "AIzaSyCJ44ZCiiLpN-EvS7KfTUWNRa4SrVnOH4w",
+  authDomain: "pedidos-vale.firebaseapp.com",
+  databaseURL: "https://pedidos-vale-default-rtdb.firebaseio.com",
+  projectId: "pedidos-vale",
+  storageBucket: "pedidos-vale.firebasestorage.app",
+  messagingSenderId: "732224803329",
+  appId: "1:732224803329:web:3976737f5e2c8784792600"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// ── AUTH STATE ─────────────────────────────────────────────────
+auth.onAuthStateChanged(user => {
+  document.getElementById('loading-overlay').style.display = 'none';
+  if(user){
+    showPortal(user);
+  } else {
+    showLogin();
+  }
+});
+
+function showLogin(){
+  document.getElementById('screen-login').style.display = 'flex';
+  document.getElementById('screen-portal').style.display = 'none';
+}
+
+function showPortal(user){
+  document.getElementById('screen-login').style.display = 'none';
+  document.getElementById('screen-portal').style.display = 'block';
+  // Preencher dados do usuário
+  const email = user.email || '';
+  const name = user.displayName || email.split('@')[0] || 'Usuário';
+  const initials = name.split(' ').map(n=>n[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('tb-uname').textContent = name;
+  document.getElementById('tb-avatar').textContent = initials;
+  // Datas
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('pt-BR', {day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('tb-date').textContent = dateStr;
+  document.getElementById('stat-date').textContent = now.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+}
+
+// ── LOGIN ──────────────────────────────────────────────────────
+async function doLogin(){
+  const email = document.getElementById('inp-email').value.trim();
+  const pwd   = document.getElementById('inp-pwd').value;
+  const errEl = document.getElementById('login-err');
+  const ldEl  = document.getElementById('login-loading');
+  errEl.style.display = 'none';
+  if(!email || !pwd){ showErr('Preencha e-mail e senha.'); return; }
+  ldEl.style.display = 'block';
+  try {
+    await auth.signInWithEmailAndPassword(email, pwd);
+  } catch(e){
+    ldEl.style.display = 'none';
+    const msgs = {
+      'auth/user-not-found':    'E-mail não encontrado.',
+      'auth/wrong-password':    'Senha incorreta.',
+      'auth/invalid-email':     'E-mail inválido.',
+      'auth/too-many-requests': 'Muitas tentativas. Tente mais tarde.',
+      'auth/invalid-credential':'E-mail ou senha incorretos.',
+    };
+    showErr(msgs[e.code] || 'Erro ao entrar: ' + e.message);
+  }
+}
+
+function showErr(msg){
+  const el = document.getElementById('login-err');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+
+// ── LOGOUT ─────────────────────────────────────────────────────
+function doLogout(){
+  if(confirm('Deseja sair do Workspace?')){
+    auth.signOut();
+  }
+}
+
+// ── RESET SENHA ────────────────────────────────────────────────
+function doForgot(){
+  const email = document.getElementById('inp-email').value.trim();
+  if(email) document.getElementById('reset-email').value = email;
+  document.getElementById('modal-pwd').classList.add('open');
+}
+
+async function sendReset(){
+  const email = document.getElementById('reset-email').value.trim();
+  const msgEl = document.getElementById('reset-msg');
+  if(!email){ return; }
+  try {
+    await auth.sendPasswordResetEmail(email);
+    msgEl.textContent = '✅ E-mail enviado! Verifique sua caixa de entrada.';
+    msgEl.style.display = 'block';
+    setTimeout(()=>{ document.getElementById('modal-pwd').classList.remove('open'); msgEl.style.display='none'; }, 3000);
+  } catch(e){
+    msgEl.style.color = 'var(--red)';
+    msgEl.textContent = 'Erro: ' + e.message;
+    msgEl.style.display = 'block';
+  }
+}
+
+// Fechar modal clicando fora
+document.getElementById('modal-pwd').addEventListener('click', function(e){
+  if(e.target === this) this.classList.remove('open');
+});
+</script>
+</body>
+</html>
