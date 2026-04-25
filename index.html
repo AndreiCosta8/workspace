@@ -686,35 +686,46 @@ function fmtNum(n){
 function mountKPIs(){
 
   // ─── 1) BI · PEDIDOS VALE ──────────────────────────────
-  // Path: /pedidos_vale → objeto com pedidos. Cada pedido tem campos como
-  // status, prazo, otiff (calculado pelo app). Para o KPI usamos contagens simples.
+  // ESTRUTURA REAL: /pedidos_vale/{numPedido}/linhas/{l001}/{status, prevEntrega, dataEntrega, ocorrencia, ...}
+  // Status reais: "ENTREGUE Á TRANSPORTADORA" | "AGUARDANDO PRODUÇÃO" | "AGUARDANDO COLETA"
+  // OTIFF (linha): entregue dentro do prazo SEM ocorrência ÷ linhas concluídas
   dbMain.ref('pedidos_vale').on('value', snap => {
     const data = snap.val() || {};
     const pedidos = Object.values(data);
     const total = pedidos.length;
-    // Em aberto: status que NÃO indica finalizado (heurística baseada em campos comuns)
-    const emAberto = pedidos.filter(p => {
-      const s = (p && (p.status || p.situacao) || '').toLowerCase();
-      return s && !s.includes('entreg') && !s.includes('cancel') && !s.includes('finaliz');
-    }).length;
-    // Vencidas: pedidos com prazo no passado e ainda em aberto
-    const hoje = new Date().toISOString().slice(0,10);
-    const vencidas = pedidos.filter(p => {
-      if(!p || !p.prazo) return false;
-      const s = (p.status||'').toLowerCase();
-      return p.prazo < hoje && !s.includes('entreg') && !s.includes('cancel');
-    }).length;
-    // OTIFF: % de entregues no prazo sem ocorrência. Calculo aproximado.
-    const entregues = pedidos.filter(p => p && /entreg/i.test(p.status||''));
-    let otiff = '—';
-    if(entregues.length){
-      const ok = entregues.filter(p => !p.atraso && !p.devolucao).length;
-      otiff = Math.round(ok/entregues.length*100) + '%';
-    }
+
+    // Em Aberto: pedidos com PELO MENOS 1 linha não entregue
+    const emAberto = pedidos.filter(p =>
+      Object.values(p?.linhas || {}).some(l => l && l.status !== 'ENTREGUE Á TRANSPORTADORA')
+    ).length;
+
+    // Vencidas: pedidos com pelo menos 1 linha cuja prevEntrega já passou e não está entregue
+    const hojeStr = new Date().toISOString().slice(0,10);
+    const vencidas = pedidos.filter(p =>
+      Object.values(p?.linhas || {}).some(l =>
+        l && l.status !== 'ENTREGUE Á TRANSPORTADORA' && l.prevEntrega && l.prevEntrega < hojeStr
+      )
+    ).length;
+
+    // OTIFF: percorre TODAS as linhas (não pedidos) e calcula no padrão do BI
+    let otOk = 0, otTot = 0;
+    pedidos.forEach(p => {
+      Object.values(p?.linhas || {}).forEach(l => {
+        if(!l || !l.prevEntrega) return;
+        const entregue = l.status === 'ENTREGUE Á TRANSPORTADORA';
+        // Só considera linhas concluídas OU com prazo já vencido
+        if(!entregue && l.prevEntrega >= hojeStr) return;
+        otTot++;
+        if(entregue && l.dataEntrega && l.dataEntrega <= l.prevEntrega && (!l.ocorrencia || l.ocorrencia==0)){
+          otOk++;
+        }
+      });
+    });
+    const otiff = otTot ? Math.round(otOk/otTot*100) + '%' : '—';
+
     setKpi('kpi-bi-otiff', otiff);
     setKpi('kpi-bi-aberto', fmtNum(emAberto));
     setKpi('kpi-bi-vencidas', fmtNum(vencidas), {warn:true});
-    // Alimenta KPI bar global do header
     G.pedidosAberto = emAberto;
     G.pedidosTotal = total;
     G.alertasVencidos = vencidas;
@@ -724,17 +735,15 @@ function mountKPIs(){
   }, err => console.warn('Erro pedidos_vale:', err));
 
   // ─── 2) EPI MANAGER ────────────────────────────────────
-  // Paths: /epis (produtos), /movimentos (entradas/saídas)
+  // ESTRUTURA REAL: /epis/{id}/{at, mx, n, ...} - at=atual, mx=máximo
+  // Estoque baixo (do app: linha 544): at/mx < 0.3
   dbMain.ref('epis').on('value', snap => {
     const data = snap.val() || {};
-    const produtos = Object.values(data);
+    const produtos = Object.values(data).filter(p => p && p.n);
     const total = produtos.length;
-    // Estoque baixo: quando "estoque" < "minimo" (campos do app)
     const baixo = produtos.filter(p => {
-      if(!p) return false;
-      const est = Number(p.estoque||p.qtd||0);
-      const min = Number(p.minimo||p.min||0);
-      return min > 0 && est < min;
+      const at = Number(p.at || 0), mx = Number(p.mx || 1);
+      return mx > 0 && (at/mx) < 0.3;
     }).length;
     setKpi('kpi-epi-total', fmtNum(total));
     setKpi('kpi-epi-baixo', fmtNum(baixo), {warn:true});
@@ -743,25 +752,39 @@ function mountKPIs(){
   }, err => console.warn('Erro epis:', err));
 
   // Movimentações no mês corrente
+  // ESTRUTURA: /movimentos/{id}/{io, dt|data|ts, ...}
   dbMain.ref('movimentos').on('value', snap => {
     const data = snap.val() || {};
     const movs = Object.values(data);
     const hoje = new Date();
     const ano = hoje.getFullYear(), mes = String(hoje.getMonth()+1).padStart(2,'0');
     const prefixo = ano+'-'+mes;
-    const noMes = movs.filter(m => m && (m.data||'').startsWith(prefixo)).length;
+    // Tenta vários campos comuns de data
+    const noMes = movs.filter(m => {
+      if(!m) return false;
+      const d = (m.dt || m.data || m.ts || '').toString();
+      return d.startsWith(prefixo);
+    }).length;
     setKpi('kpi-epi-movs', fmtNum(noMes));
   }, err => console.warn('Erro movimentos:', err));
 
   // ─── 3) VISITAS PRO ────────────────────────────────────
-  // Path: /visits → cada visita tem status: Agendada, Realizada, Cancelada, Atrasada, Reagendada
+  // ESTRUTURA REAL: /visits/{id}/{data, status, funcionario, cliente, ...}
+  // Status reais: "Agendada" | "Realizada" | "Cancelada" | "Reagendada"
+  // Atrasadas: status "Agendada" + data já passou
   dbMain.ref('visits').on('value', snap => {
     const data = snap.val() || {};
     const visits = Object.values(data);
+    const hojeStr = new Date().toISOString().slice(0,10);
     const cnt = (status) => visits.filter(v => v && v.status === status).length;
-    setKpi('kpi-vp-agend', fmtNum(cnt('Agendada')));
-    setKpi('kpi-vp-real', fmtNum(cnt('Realizada')));
-    const atrasadas = cnt('Atrasada');
+    const agendadas = cnt('Agendada');
+    const realizadas = cnt('Realizada');
+    // Atrasadas: agendadas com data no passado (ainda não realizadas/canceladas)
+    const atrasadas = visits.filter(v =>
+      v && v.status === 'Agendada' && v.data && v.data < hojeStr
+    ).length;
+    setKpi('kpi-vp-agend', fmtNum(agendadas));
+    setKpi('kpi-vp-real', fmtNum(realizadas));
     setKpi('kpi-vp-atras', fmtNum(atrasadas), {warn:true});
     G.alertasAtrasadas = atrasadas;
     refreshGlobalKPIs();
@@ -797,23 +820,26 @@ function mountKPIs(){
   }, err => console.warn('Erro sipatmin:', err));
 
   // ─── 5) UNILUVAS TESTES (banco Firebase separado) ───────
+  // ESTRUTURA REAL: /tests = ARRAY ou OBJECT de fichas
+  // Cada ficha tem: decisaoUsuario ('aprovado'|'reprovado'), decisaoSESMT (idem ou null)
+  // Aprovada = decisaoSESMT === 'aprovado'  (parecer SESMT é o final)
+  // Pendente SESMT = decisaoUsuario preenchido mas decisaoSESMT é null
   if(dbUni){
     dbUni.ref('tests').on('value', snap => {
-      const data = snap.val() || {};
-      const fichas = Object.values(data);
+      const raw = snap.val();
+      // Pode vir como array (com índice 0 vazio) ou objeto
+      const fichas = Array.isArray(raw) ? raw.filter(Boolean) : Object.values(raw || {});
       const total = fichas.length;
-      const aprov = fichas.filter(f => f && (f.decisaoSESMT==='aprovado' || f.decisaoUsuario==='aprovado')).length;
-      const pend = fichas.filter(f => f && !f.decisaoSESMT).length;
+      const aprov = fichas.filter(f => f && f.decisaoSESMT === 'aprovado').length;
+      const pend = fichas.filter(f => f && f.decisaoUsuario && !f.decisaoSESMT).length;
       setKpi('kpi-uni-total', fmtNum(total));
       setKpi('kpi-uni-aprov', fmtNum(aprov));
       setKpi('kpi-uni-pend', fmtNum(pend), {warn:true});
     }, err => {
       console.warn('Erro Uniluvas tests:', err);
-      // Banco indisponível → mostra "—" ao invés de loading infinito
       setKpi('kpi-uni-total', '—'); setKpi('kpi-uni-aprov', '—'); setKpi('kpi-uni-pend', '—');
     });
   } else {
-    // Sem banco Uniluvas configurado → KPIs como N/D
     setKpi('kpi-uni-total', '—'); setKpi('kpi-uni-aprov', '—'); setKpi('kpi-uni-pend', '—');
   }
 }
