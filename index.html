@@ -107,6 +107,29 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
 /* Card desabilitado */
 .app-card.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
 
+/* ── MINI-DASHBOARD DENTRO DO CARD ──────────── */
+/* Linha de KPIs: 3 números em destaque */
+.card-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 12px;padding:12px 0;border-top:1px dashed var(--border);border-bottom:1px dashed var(--border)}
+.card-kpi{text-align:center;min-width:0}
+.card-kpi-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--accent,var(--gold));line-height:1;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-kpi-val.warn{color:var(--red)}
+.card-kpi-val.muted{color:var(--muted);font-size:12px}
+.card-kpi-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:4px;line-height:1.3}
+/* Atalhos rápidos */
+.card-shortcuts{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
+.card-shortcut{font-size:9.5px;font-weight:600;color:var(--text);background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:4px 8px;text-decoration:none;transition:all .12s;white-space:nowrap}
+.card-shortcut:hover{background:var(--accent,var(--gold));color:#000;border-color:var(--accent,var(--gold))}
+/* Badge de alerta no canto do card (já existe .card-badge mas precisamos da variante alert) */
+.card-badge.badge-alert{background:rgba(232,80,58,.15);color:var(--red);border:1px solid rgba(232,80,58,.4);animation:pulseAlert 2s ease-in-out infinite}
+@keyframes pulseAlert{0%,100%{box-shadow:0 0 0 0 rgba(232,80,58,.4)}50%{box-shadow:0 0 0 6px rgba(232,80,58,0)}}
+/* Estado loading do KPI */
+.card-kpi-val.loading{position:relative;color:transparent}
+.card-kpi-val.loading::after{content:'';position:absolute;inset:30% 25%;background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.15),rgba(255,255,255,.05));background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:3px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* Indicador de "ao vivo" mais sutil dentro do card */
+.card-live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:livePulse 1.6s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.4}}
+
 /* Updates */
 .updates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .update-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
@@ -205,7 +228,7 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
     <p class="hero-sub">Acesso rápido a todos os sistemas da equipe — pedidos, EPI, testes e visitas. Tudo em um único lugar com dados em tempo real.</p>
     <div class="stats-row">
       <div class="stat">
-        <div class="stat-val">6</div>
+        <div class="stat-val">7</div>
         <div class="stat-lbl">Sistemas<br>Ativos</div>
       </div>
       <div class="stat-div"></div>
@@ -228,32 +251,65 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
     <div class="sec-head">
       <div class="sec-title">Sistemas Disponíveis</div>
       <div class="sec-line"></div>
-      <div class="sec-count">6 ativos</div>
+      <div class="sec-count">7 ativos</div>
     </div>
 
     <div class="apps-grid">
 
       <!-- PEDIDOS VALE -->
       <a class="app-card" href="https://andreicosta8.github.io/pedidos-vale-ofc" target="_blank" style="--accent:var(--gold)">
-        <div class="card-top"><div class="card-icon">📊</div><span class="card-badge badge-live">● Ao vivo</span></div>
+        <div class="card-top"><div class="card-icon">📊</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
         <div class="card-title">BI · Pedidos Vale</div>
-        <div class="card-desc">Dashboard OTIFF · ONTIME · IN FULL. Controle completo de pedidos, faturamento, prazos e tratativas com alertas automáticos.</div>
-        <div class="card-footer"><div class="card-tags"><span class="tag">OTIFF</span><span class="tag">Firebase</span><span class="tag">301 pedidos</span></div><span class="card-arrow">→</span></div>
+        <div class="card-desc">Dashboard OTIFF · ONTIME · IN FULL. Pedidos, faturamento, prazos e tratativas.</div>
+        <div class="card-kpis">
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-bi-otiff">—</div><div class="card-kpi-lbl">% OTIFF</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-bi-aberto">—</div><div class="card-kpi-lbl">Em Aberto</div></div>
+          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-bi-vencidas">—</div><div class="card-kpi-lbl">⚠ Vencidas</div></div>
+        </div>
+        <div class="card-shortcuts" onclick="event.stopPropagation()">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=pedidos" target="_blank" rel="noopener">📋 Pedidos</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=tratativa" target="_blank" rel="noopener">⚡ Tratativa</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=evolucao" target="_blank" rel="noopener">📈 Evolução</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=ranking" target="_blank" rel="noopener">🏆 Ranking</a>
+        </div>
+        <div class="card-footer"><div class="card-tags"><span class="tag">OTIFF</span><span class="tag">Firebase</span><span class="tag" id="tag-bi-total">— pedidos</span></div><span class="card-arrow">→</span></div>
       </a>
 
       <!-- EPI MANAGER -->
       <a class="app-card" href="https://andreicosta8.github.io/epi-manager" target="_blank" style="--accent:var(--green)">
-        <div class="card-top"><div class="card-icon">🦺</div><span class="card-badge badge-live">● Ao vivo</span></div>
+        <div class="card-top"><div class="card-icon">🦺</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
         <div class="card-title">Gestão de Estoque EPI</div>
-        <div class="card-desc">Controle de estoque de EPIs, movimentações, alertas de reposição e relatórios por produto e categoria.</div>
+        <div class="card-desc">Controle de estoque de EPIs, movimentações, alertas e relatórios.</div>
+        <div class="card-kpis">
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-epi-total">—</div><div class="card-kpi-lbl">Produtos</div></div>
+          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-epi-baixo">—</div><div class="card-kpi-lbl">⚠ Est. Baixo</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-epi-movs">—</div><div class="card-kpi-lbl">Movs. Mês</div></div>
+        </div>
+        <div class="card-shortcuts" onclick="event.stopPropagation()">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=products" target="_blank" rel="noopener">📦 Produtos</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=movements" target="_blank" rel="noopener">↔️ Movimentações</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=companies" target="_blank" rel="noopener">🏢 Empresas</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=reports" target="_blank" rel="noopener">📋 Relatórios</a>
+        </div>
         <div class="card-footer"><div class="card-tags"><span class="tag">Estoque</span><span class="tag">Firebase</span><span class="tag">Alertas</span></div><span class="card-arrow">→</span></div>
       </a>
 
       <!-- UNILUVAS TESTES -->
       <a class="app-card" href="https://andreicosta8.github.io/uniluvas_epi" target="_blank" style="--accent:var(--purple)">
-        <div class="card-top"><div class="card-icon">🧪</div><span class="card-badge badge-live">● Ao vivo</span></div>
+        <div class="card-top"><div class="card-icon">🧪</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
         <div class="card-title">Uniluvas · Fichas de Teste</div>
-        <div class="card-desc">Plataforma de acesso e gestão de fichas de teste de EPIs. Registro de resultados, aprovações e histórico por produto.</div>
+        <div class="card-desc">Plataforma de fichas de teste de EPIs. Resultados, aprovações e histórico.</div>
+        <div class="card-kpis">
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-uni-total">—</div><div class="card-kpi-lbl">Fichas</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-uni-aprov">—</div><div class="card-kpi-lbl">Aprovadas</div></div>
+          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-uni-pend">—</div><div class="card-kpi-lbl">⏳ SESMT</div></div>
+        </div>
+        <div class="card-shortcuts" onclick="event.stopPropagation()">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=fichas" target="_blank" rel="noopener">📋 Fichas</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=relatorios" target="_blank" rel="noopener">📊 Relatórios</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=codigos" target="_blank" rel="noopener">🔑 Códigos</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=portais" target="_blank" rel="noopener">🚪 Portais</a>
+        </div>
         <div class="card-footer"><div class="card-tags"><span class="tag">Testes</span><span class="tag">Firebase</span><span class="tag">EmailJS</span></div><span class="card-arrow">→</span></div>
       </a>
 
@@ -261,15 +317,31 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
       <a class="app-card" href="https://andreicosta8.github.io/visitaspro" target="_blank" style="--accent:var(--blue)">
         <div class="card-top"><div class="card-icon">🗺️</div><span class="card-badge badge-mobile">📱 Mobile</span></div>
         <div class="card-title">VisitasPRO</div>
-        <div class="card-desc">Controle pessoal de visitas a clientes. Agendamento, histórico por cliente, relatórios e exportação CSV.</div>
+        <div class="card-desc">Controle pessoal de visitas a clientes. Agendamento, histórico e relatórios.</div>
+        <div class="card-kpis">
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-vp-agend">—</div><div class="card-kpi-lbl">Agendadas</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-vp-real">—</div><div class="card-kpi-lbl">Realizadas</div></div>
+          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-vp-atras">—</div><div class="card-kpi-lbl">⚠ Atrasadas</div></div>
+        </div>
+        <div class="card-shortcuts" onclick="event.stopPropagation()">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=visits" target="_blank" rel="noopener">📅 Visitas</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=form" target="_blank" rel="noopener">➕ Nova</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=clients" target="_blank" rel="noopener">👥 Clientes</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=report" target="_blank" rel="noopener">📊 Relatório</a>
+        </div>
         <div class="card-footer"><div class="card-tags"><span class="tag">Visitas</span><span class="tag">Firebase</span><span class="tag">WhatsApp</span></div><span class="card-arrow">→</span></div>
       </a>
 
       <!-- QUIZ EPI ADMIN -->
       <a class="app-card" href="https://andreicosta8.github.io/sipatmin/banca-admin" target="_blank" style="--accent:#e8503a">
-        <div class="card-top"><div class="card-icon">🎮</div><span class="card-badge badge-live">● Ao vivo</span></div>
+        <div class="card-top"><div class="card-icon">🎮</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
         <div class="card-title">Quiz EPI · Admin</div>
-        <div class="card-desc">Painel do apresentador. Veja jogadores, inicie o quiz, controle perguntas e revele respostas. Serve para banca, evento SIPATMIN e treinamentos.</div>
+        <div class="card-desc">Painel do apresentador. Inicie quiz, controle perguntas e revele respostas.</div>
+        <div class="card-kpis">
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qa-sala">—</div><div class="card-kpi-lbl">Sala Ativa</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qa-jog">—</div><div class="card-kpi-lbl">Jogadores</div></div>
+          <div class="card-kpi"><div class="card-kpi-val muted" id="kpi-qa-status">—</div><div class="card-kpi-lbl">Status</div></div>
+        </div>
         <div class="card-footer"><div class="card-tags"><span class="tag">Apresentador</span><span class="tag">Firebase</span><span class="tag">Desktop</span></div><span class="card-arrow">→</span></div>
       </a>
 
@@ -277,8 +349,32 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
       <a class="app-card" href="https://andreicosta8.github.io/sipatmin/banca" target="_blank" style="--accent:#22c97a">
         <div class="card-top"><div class="card-icon">🧤</div><span class="card-badge badge-mobile">📱 Mobile</span></div>
         <div class="card-title">Quiz EPI · Jogador</div>
-        <div class="card-desc">App mobile para jogadores. Escaneie o QR Code ou acesse pelo link direto. Aguarda o admin iniciar e compete ao vivo com ranking em tempo real.</div>
+        <div class="card-desc">App mobile para entrar no quiz. Escaneie o QR ou acesse pelo link direto.</div>
+        <div class="card-kpis">
+          <div class="card-kpi"><div class="card-kpi-val muted" id="kpi-qj-status">—</div><div class="card-kpi-lbl">Quiz Hoje</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qj-sala">—</div><div class="card-kpi-lbl">Sala</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qj-conec">—</div><div class="card-kpi-lbl">Conectados</div></div>
+        </div>
         <div class="card-footer"><div class="card-tags"><span class="tag">Jogador</span><span class="tag">Firebase</span><span class="tag">Mobile</span></div><span class="card-arrow">→</span></div>
+      </a>
+
+      <!-- CATÁLOGO UNILUVAS -->
+      <a class="app-card" href="https://andreicosta8.github.io/catalogo-uniluvas" target="_blank" style="--accent:var(--amber)">
+        <div class="card-top"><div class="card-icon">📘</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
+        <div class="card-title">Catálogo Uniluvas</div>
+        <div class="card-desc">Catálogo digital com 17 EPIs, fichas técnicas, normas e CAs. Compartilhável via WhatsApp.</div>
+        <div class="card-kpis">
+          <div class="card-kpi"><div class="card-kpi-val">17</div><div class="card-kpi-lbl">EPIs</div></div>
+          <div class="card-kpi"><div class="card-kpi-val">12</div><div class="card-kpi-lbl">Normas</div></div>
+          <div class="card-kpi"><div class="card-kpi-val">3</div><div class="card-kpi-lbl">⭐ Top</div></div>
+        </div>
+        <div class="card-shortcuts" onclick="event.stopPropagation()">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#sobre" target="_blank" rel="noopener">🏢 A Empresa</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#epis" target="_blank" rel="noopener">🛡️ EPIs</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#normas" target="_blank" rel="noopener">📋 Normas</a>
+          <a class="card-shortcut" href="https://wa.me/559491126215?text=Vim%20pelo%20workspace" target="_blank" rel="noopener">💬 Especialista</a>
+        </div>
+        <div class="card-footer"><div class="card-tags"><span class="tag">17 EPIs</span><span class="tag">Público</span><span class="tag">Mobile</span></div><span class="card-arrow">→</span></div>
       </a>
 
     </div>
@@ -290,30 +386,20 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
     </div>
     <div class="updates-grid">
       <div class="update-item">
+        <div class="update-dot" style="background:var(--amber)"></div>
+        <div class="update-text">
+          <strong>Catálogo Uniluvas</strong>
+          17 EPIs com fichas técnicas · Imagens offline em base64 · Filtros por categoria e risco · Compartilhável com clientes via WhatsApp
+          <div class="update-time">Abr 2026</div>
+        </div>
+      </div>
+      <div class="update-item">
         <div class="update-dot" style="background:var(--gold)"></div>
         <div class="update-text">
           <strong>BI Pedidos Vale</strong>
           OTIFF/ONTIME por linha · Alertas de prazo · Devolução IN FULL · Filtros por UF e planta
           <div class="update-time">Abr 2026</div>
         </div>
-      </div>
-      <div class="update-item">
-        <div class="update-dot" style="background:var(--blue)"></div>
-        <div class="update-text">
-          <strong>VisitasPRO</strong>
-          Firebase granular · Status Reagendada · Taxa de realização · Último contato na lista
-          <div class="update-time">Abr 2026</div>
-        </div>
-      </div>
-      <div class="update-item">
-        <div class="update-dot" style="background:#e8503a"></div>
-        <div class="update-text">
-          <strong>Quiz EPI · Uniluvas</strong>
-          Admin (desktop) + Jogador (mobile) · Multiplayer ao vivo · 12 perguntas técnicas · Pódio com confetes · Banca, evento e treinamento
-          <div class="update-time">Abr 2026</div>
-        </div>
-      </div>
-    </div></div>
       </div>
       <div class="update-item">
         <div class="update-dot" style="background:var(--blue)"></div>
@@ -327,7 +413,15 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
         <div class="update-dot" style="background:var(--green)"></div>
         <div class="update-text">
           <strong>Portal Workspace</strong>
-          Login com Firebase Auth · Acesso centralizado aos 4 sistemas · Suporte mobile e desktop
+          Login com Firebase Auth · Acesso centralizado aos sistemas · Suporte mobile e desktop
+          <div class="update-time">Abr 2026</div>
+        </div>
+      </div>
+      <div class="update-item">
+        <div class="update-dot" style="background:#e8503a"></div>
+        <div class="update-text">
+          <strong>Quiz EPI · Uniluvas</strong>
+          Admin (desktop) + Jogador (mobile) · Multiplayer ao vivo · 12 perguntas técnicas · Pódio com confetes
           <div class="update-time">Abr 2026</div>
         </div>
       </div>
@@ -335,7 +429,7 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
         <div class="update-dot" style="background:#e8503a"></div>
         <div class="update-text">
           <strong>Quiz EPI · SIPATMIN</strong>
-          Telão + Jogador responsivo (mobile/desktop) · Pódio animado com confetes · Multiplayer com código de sala · 12 perguntas técnicas Uniluvas
+          Telão + Jogador responsivo (mobile/desktop) · Pódio animado · Multiplayer com código de sala · Voltado ao evento SIPATMIN
           <div class="update-time">Abr 2026</div>
         </div>
       </div>
@@ -413,6 +507,171 @@ function showPortal(user){
   const dateStr = now.toLocaleDateString('pt-BR', {day:'2-digit',month:'short',year:'numeric'});
   document.getElementById('tb-date').textContent = dateStr;
   document.getElementById('stat-date').textContent = now.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  // ✨ Inicia os mini-dashboards Firebase em tempo real
+  mountKPIs();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// 📡 MINI-DASHBOARDS FIREBASE EM TEMPO REAL
+// ══════════════════════════════════════════════════════════════════
+// Reusa a instância padrão do Firebase (config no topo do <script>) para os apps
+// que gravam em "pedidos-vale-default-rtdb": BI Pedidos, EPI Manager, VisitasPRO, Quiz.
+// Para o Uniluvas Testes (banco SEPARADO), inicializa uma 2ª app nomeada.
+const dbMain = firebase.database();
+
+// 2ª instância Firebase só para o Uniluvas Testes (banco diferente)
+let dbUni = null;
+try {
+  const uniConfig = {
+    apiKey: firebaseConfig.apiKey,  // mesma key — leitura pública
+    databaseURL: "https://uniluvas-teste-default-rtdb.firebaseio.com",  // ⚠️ TROCAR se sua URL for outra
+    projectId: firebaseConfig.projectId,
+  };
+  const uniApp = firebase.initializeApp(uniConfig, 'uniluvas');
+  dbUni = uniApp.database();
+} catch(e){ console.warn('Uniluvas Firebase indisponível:', e); }
+
+// Helper: define o valor de um KPI e remove o estado loading
+function setKpi(id, value, opts={}){
+  const el = document.getElementById(id);
+  if(!el) return;
+  el.classList.remove('loading');
+  el.textContent = value;
+  if(opts.warn) el.classList.add('warn');
+  if(opts.muted) el.classList.add('muted');
+}
+
+// Helper: formata números grandes em compacto (1234 → "1,2k")
+function fmtNum(n){
+  if(n==null||isNaN(n)) return '—';
+  if(n>=1000) return (n/1000).toFixed(1).replace('.0','')+'k';
+  return String(n);
+}
+
+// Função principal — chamada dentro de showPortal() após login
+function mountKPIs(){
+
+  // ─── 1) BI · PEDIDOS VALE ──────────────────────────────
+  // Path: /pedidos_vale → objeto com pedidos. Cada pedido tem campos como
+  // status, prazo, otiff (calculado pelo app). Para o KPI usamos contagens simples.
+  dbMain.ref('pedidos_vale').on('value', snap => {
+    const data = snap.val() || {};
+    const pedidos = Object.values(data);
+    const total = pedidos.length;
+    // Em aberto: status que NÃO indica finalizado (heurística baseada em campos comuns)
+    const emAberto = pedidos.filter(p => {
+      const s = (p && (p.status || p.situacao) || '').toLowerCase();
+      return s && !s.includes('entreg') && !s.includes('cancel') && !s.includes('finaliz');
+    }).length;
+    // Vencidas: pedidos com prazo no passado e ainda em aberto
+    const hoje = new Date().toISOString().slice(0,10);
+    const vencidas = pedidos.filter(p => {
+      if(!p || !p.prazo) return false;
+      const s = (p.status||'').toLowerCase();
+      return p.prazo < hoje && !s.includes('entreg') && !s.includes('cancel');
+    }).length;
+    // OTIFF: % de entregues no prazo sem ocorrência. Calculo aproximado.
+    const entregues = pedidos.filter(p => p && /entreg/i.test(p.status||''));
+    let otiff = '—';
+    if(entregues.length){
+      const ok = entregues.filter(p => !p.atraso && !p.devolucao).length;
+      otiff = Math.round(ok/entregues.length*100) + '%';
+    }
+    setKpi('kpi-bi-otiff', otiff);
+    setKpi('kpi-bi-aberto', fmtNum(emAberto));
+    setKpi('kpi-bi-vencidas', fmtNum(vencidas), {warn:true});
+    const tagEl = document.getElementById('tag-bi-total');
+    if(tagEl) tagEl.textContent = total + ' pedidos';
+  }, err => console.warn('Erro pedidos_vale:', err));
+
+  // ─── 2) EPI MANAGER ────────────────────────────────────
+  // Paths: /epis (produtos), /movimentos (entradas/saídas)
+  dbMain.ref('epis').on('value', snap => {
+    const data = snap.val() || {};
+    const produtos = Object.values(data);
+    const total = produtos.length;
+    // Estoque baixo: quando "estoque" < "minimo" (campos do app)
+    const baixo = produtos.filter(p => {
+      if(!p) return false;
+      const est = Number(p.estoque||p.qtd||0);
+      const min = Number(p.minimo||p.min||0);
+      return min > 0 && est < min;
+    }).length;
+    setKpi('kpi-epi-total', fmtNum(total));
+    setKpi('kpi-epi-baixo', fmtNum(baixo), {warn:true});
+  }, err => console.warn('Erro epis:', err));
+
+  // Movimentações no mês corrente
+  dbMain.ref('movimentos').on('value', snap => {
+    const data = snap.val() || {};
+    const movs = Object.values(data);
+    const hoje = new Date();
+    const ano = hoje.getFullYear(), mes = String(hoje.getMonth()+1).padStart(2,'0');
+    const prefixo = ano+'-'+mes;
+    const noMes = movs.filter(m => m && (m.data||'').startsWith(prefixo)).length;
+    setKpi('kpi-epi-movs', fmtNum(noMes));
+  }, err => console.warn('Erro movimentos:', err));
+
+  // ─── 3) VISITAS PRO ────────────────────────────────────
+  // Path: /visits → cada visita tem status: Agendada, Realizada, Cancelada, Atrasada, Reagendada
+  dbMain.ref('visits').on('value', snap => {
+    const data = snap.val() || {};
+    const visits = Object.values(data);
+    const cnt = (status) => visits.filter(v => v && v.status === status).length;
+    setKpi('kpi-vp-agend', fmtNum(cnt('Agendada')));
+    setKpi('kpi-vp-real', fmtNum(cnt('Realizada')));
+    setKpi('kpi-vp-atras', fmtNum(cnt('Atrasada')), {warn:true});
+  }, err => console.warn('Erro visits:', err));
+
+  // ─── 4) QUIZ ADMIN + JOGADOR ───────────────────────────
+  // Path: /sipatmin/activeRoom (string com código da sala) e /sipatmin/{sala}/players
+  dbMain.ref('sipatmin/activeRoom').on('value', snap => {
+    const sala = snap.val();
+    if(sala){
+      setKpi('kpi-qa-sala', sala);
+      setKpi('kpi-qj-sala', sala);
+      setKpi('kpi-qj-status', '🟢 Ativo', {muted:true});
+      // Conta jogadores
+      dbMain.ref('sipatmin/'+sala+'/players').once('value').then(s2 => {
+        const n = s2.val() ? Object.keys(s2.val()).length : 0;
+        setKpi('kpi-qa-jog', n);
+        setKpi('kpi-qj-conec', n);
+      });
+      // Status da sessão (em jogo / aguardando)
+      dbMain.ref('sipatmin/'+sala+'/session').once('value').then(s3 => {
+        const sess = s3.val() || {};
+        setKpi('kpi-qa-status', sess.active ? 'Em jogo' : 'Lobby', {muted:true});
+      });
+    } else {
+      setKpi('kpi-qa-sala', '—');
+      setKpi('kpi-qa-jog', '0');
+      setKpi('kpi-qa-status', 'Sem sala', {muted:true});
+      setKpi('kpi-qj-status', 'Inativo', {muted:true});
+      setKpi('kpi-qj-sala', '—');
+      setKpi('kpi-qj-conec', '0');
+    }
+  }, err => console.warn('Erro sipatmin:', err));
+
+  // ─── 5) UNILUVAS TESTES (banco Firebase separado) ───────
+  if(dbUni){
+    dbUni.ref('tests').on('value', snap => {
+      const data = snap.val() || {};
+      const fichas = Object.values(data);
+      const total = fichas.length;
+      const aprov = fichas.filter(f => f && (f.decisaoSESMT==='aprovado' || f.decisaoUsuario==='aprovado')).length;
+      const pend = fichas.filter(f => f && !f.decisaoSESMT).length;
+      setKpi('kpi-uni-total', fmtNum(total));
+      setKpi('kpi-uni-aprov', fmtNum(aprov));
+      setKpi('kpi-uni-pend', fmtNum(pend), {warn:true});
+    }, err => {
+      console.warn('Erro Uniluvas tests:', err);
+      // Banco indisponível → mostra "—" ao invés de loading infinito
+      setKpi('kpi-uni-total', '—'); setKpi('kpi-uni-aprov', '—'); setKpi('kpi-uni-pend', '—');
+    });
+  } else {
+    // Sem banco Uniluvas configurado → KPIs como N/D
+    setKpi('kpi-uni-total', '—'); setKpi('kpi-uni-aprov', '—'); setKpi('kpi-uni-pend', '—');
+  }
 }
 
 // ── LOGIN ──────────────────────────────────────────────────────
