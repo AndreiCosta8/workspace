@@ -66,69 +66,88 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
 .btn-logout:hover{background:rgba(232,80,58,.2)}
 .tb-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)}
 
-/* Hero */
-.hero{padding:48px 24px 32px;max-width:1200px;margin:0 auto}
-.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(245,196,24,.08);border:1px solid rgba(245,196,24,.2);border-radius:20px;padding:4px 12px;font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:16px}
-.hero-title{font-size:clamp(28px,4vw,44px);font-weight:800;color:#fff;line-height:1.15;margin-bottom:10px}
-.hero-title em{font-style:normal;color:var(--gold)}
-.hero-sub{font-size:13px;color:var(--muted);max-width:520px;line-height:1.6;margin-bottom:32px}
-.stats-row{display:flex;gap:0;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;display:inline-flex}
-.stat{padding:14px 24px;text-align:center}
-.stat-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--gold)}
-.stat-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
-.stat-div{width:1px;background:var(--border)}
+/* Hero — compacto e denso */
+.hero{padding:32px 24px 20px;max-width:1400px;margin:0 auto}
+.hero-row{display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-bottom:24px}
+.hero-left{flex:1;min-width:280px}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(245,196,24,.08);border:1px solid rgba(245,196,24,.2);border-radius:20px;padding:4px 12px;font-size:10px;color:var(--gold);text-transform:uppercase;letter-spacing:.8px;margin-bottom:12px;font-weight:600}
+.hero-title{font-size:clamp(22px,2.5vw,32px);font-weight:700;color:#fff;line-height:1.15;letter-spacing:-.01em;margin-bottom:6px}
+.hero-title em{font-style:normal;color:var(--gold);font-weight:700}
+.hero-sub{font-size:12px;color:var(--muted);line-height:1.55;max-width:520px}
 
-/* Apps Grid */
-.content{padding:0 24px 48px;max-width:1200px;margin:0 auto}
-.sec-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
-.sec-title{font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+/* KPI bar global — agregado de tudo */
+.global-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:32px}
+.global-kpi{background:var(--card);padding:16px 18px;display:flex;flex-direction:column;gap:4px;transition:background .15s}
+.global-kpi:hover{background:var(--card2)}
+.global-kpi-lbl{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;font-weight:600;display:flex;align-items:center;gap:6px}
+.global-kpi-val{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;color:#fff;letter-spacing:-.02em;line-height:1}
+.global-kpi-val.gold{color:var(--gold)}
+.global-kpi-val.warn{color:var(--red)}
+.global-kpi-val.green{color:var(--green)}
+.global-kpi-trend{font-size:10px;color:var(--muted);font-family:'JetBrains Mono',monospace}
+
+/* Apps Grid — denso e profissional */
+.content{padding:0 24px 48px;max-width:1400px;margin:0 auto}
+.sec-head{display:flex;align-items:center;gap:14px;margin:24px 0 16px}
+.sec-title{font-size:10.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px}
 .sec-line{flex:1;height:1px;background:var(--border)}
-.sec-count{font-size:10px;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:2px 8px}
+.sec-count{font-size:10px;color:var(--muted);background:var(--card);border:1px solid var(--border);border-radius:10px;padding:3px 10px;font-family:'JetBrains Mono',monospace}
 
-.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:40px}
+.apps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px;margin-bottom:32px}
+@media (min-width:1280px){.apps-grid{grid-template-columns:repeat(3,1fr)}}
+@media (min-width:1600px){.apps-grid{grid-template-columns:repeat(4,1fr)}}
 
-.app-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;text-decoration:none;color:var(--text);display:block;position:relative;overflow:hidden;transition:transform .18s,border-color .18s,box-shadow .18s;cursor:pointer}
-.app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--accent,var(--gold));opacity:.7;border-radius:16px 16px 0 0}
-.app-card:hover{transform:translateY(-3px);border-color:var(--accent,var(--gold));box-shadow:0 8px 32px rgba(0,0,0,.3)}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-.card-icon{width:44px;height:44px;background:rgba(255,255,255,.05);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
-.card-badge{font-size:9px;padding:3px 8px;border-radius:10px;font-weight:600;text-transform:uppercase;letter-spacing:.3px}
-.badge-live{background:rgba(34,201,122,.12);color:var(--green);border:1px solid rgba(34,201,122,.25)}
-.badge-new{background:rgba(155,114,232,.12);color:var(--purple);border:1px solid rgba(155,114,232,.25)}
-.badge-mobile{background:rgba(59,143,212,.12);color:var(--blue);border:1px solid rgba(59,143,212,.25)}
-.card-title{font-size:15px;font-weight:700;color:#fff;margin-bottom:5px}
-.card-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:16px}
-.card-footer{display:flex;align-items:center;justify-content:space-between}
-.card-tags{display:flex;gap:5px;flex-wrap:wrap}
-.tag{font-size:9px;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:6px;padding:2px 7px;color:var(--muted)}
-.card-arrow{font-size:16px;color:var(--muted);transition:transform .15s,color .15s}
-.app-card:hover .card-arrow{transform:translateX(4px);color:var(--accent,var(--gold))}
+/* Card como article (não <a>!) — corrige bug de aninhamento ─────── */
+.app-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;color:var(--text);display:flex;flex-direction:column;position:relative;transition:transform .15s ease,border-color .15s,box-shadow .15s;cursor:pointer;overflow:hidden}
+.app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent,var(--gold));opacity:.6;transition:opacity .15s,height .15s}
+.app-card:hover{transform:translateY(-2px);border-color:var(--accent,var(--gold));box-shadow:0 6px 24px rgba(0,0,0,.4),0 0 0 1px var(--accent,var(--gold))}
+.app-card:hover::before{opacity:1;height:3px}
+
+/* Header do card */
+.card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:10px}
+.card-icon-wrap{display:flex;align-items:center;gap:10px;min-width:0;flex:1}
+.card-icon{width:34px;height:34px;background:linear-gradient(135deg,rgba(255,255,255,.04),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.card-titles{min-width:0;flex:1}
+.card-title{font-size:13.5px;font-weight:600;color:#fff;letter-spacing:-.005em;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card-subtitle{font-size:9.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.card-badge{font-size:8.5px;padding:3px 7px;border-radius:8px;font-weight:600;text-transform:uppercase;letter-spacing:.3px;flex-shrink:0;display:inline-flex;align-items:center;gap:4px}
+.badge-live{background:rgba(34,201,122,.1);color:var(--green);border:1px solid rgba(34,201,122,.22)}
+.badge-mobile{background:rgba(59,143,212,.1);color:var(--blue);border:1px solid rgba(59,143,212,.22)}
+.badge-static{background:rgba(245,196,24,.08);color:var(--amber);border:1px solid rgba(245,196,24,.2)}
+
+.card-desc{font-size:11px;color:var(--muted);line-height:1.5;margin-bottom:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* KPIs — linha horizontal compacta */
+.card-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin-bottom:14px;border:1px solid var(--border)}
+.card-kpi{background:rgba(255,255,255,.015);padding:10px 6px;text-align:center;min-width:0}
+.card-kpi-val{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--accent,var(--gold));line-height:1;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+.card-kpi-val.warn{color:var(--red)}
+.card-kpi-val.muted{color:var(--muted);font-size:11px}
+.card-kpi-lbl{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:5px;line-height:1.2;padding:0 2px;font-weight:500}
+
+/* Loading shimmer */
+.card-kpi-val.loading{position:relative;color:transparent}
+.card-kpi-val.loading::after{content:'';position:absolute;inset:25% 20%;background:linear-gradient(90deg,rgba(255,255,255,.04),rgba(255,255,255,.12),rgba(255,255,255,.04));background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:3px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* Atalhos como botões secundários */
+.card-shortcuts{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:12px}
+.card-shortcut{font-size:9.5px;font-weight:500;color:var(--muted);background:rgba(255,255,255,.025);border:1px solid var(--border);border-radius:6px;padding:4px 8px;text-decoration:none;transition:all .12s;white-space:nowrap;letter-spacing:.1px}
+.card-shortcut:hover{background:var(--card2);color:var(--text);border-color:var(--accent,var(--gold))}
+
+/* Footer compacto */
+.card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:auto}
+.card-meta{font-size:9.5px;color:var(--muted);font-family:'JetBrains Mono',monospace;letter-spacing:.2px}
+.card-cta{font-size:10.5px;font-weight:600;color:var(--accent,var(--gold));display:flex;align-items:center;gap:4px;transition:gap .15s}
+.app-card:hover .card-cta{gap:7px}
+
+/* Live dot */
+.card-live-dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:currentColor;animation:livePulse 1.8s ease-in-out infinite}
+@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.35}}
 
 /* Card desabilitado */
-.app-card.disabled{opacity:.5;cursor:not-allowed;pointer-events:none}
-
-/* ── MINI-DASHBOARD DENTRO DO CARD ──────────── */
-/* Linha de KPIs: 3 números em destaque */
-.card-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0 12px;padding:12px 0;border-top:1px dashed var(--border);border-bottom:1px dashed var(--border)}
-.card-kpi{text-align:center;min-width:0}
-.card-kpi-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:700;color:var(--accent,var(--gold));line-height:1;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.card-kpi-val.warn{color:var(--red)}
-.card-kpi-val.muted{color:var(--muted);font-size:12px}
-.card-kpi-lbl{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:4px;line-height:1.3}
-/* Atalhos rápidos */
-.card-shortcuts{display:flex;flex-wrap:wrap;gap:5px;margin-top:10px}
-.card-shortcut{font-size:9.5px;font-weight:600;color:var(--text);background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:4px 8px;text-decoration:none;transition:all .12s;white-space:nowrap}
-.card-shortcut:hover{background:var(--accent,var(--gold));color:#000;border-color:var(--accent,var(--gold))}
-/* Badge de alerta no canto do card (já existe .card-badge mas precisamos da variante alert) */
-.card-badge.badge-alert{background:rgba(232,80,58,.15);color:var(--red);border:1px solid rgba(232,80,58,.4);animation:pulseAlert 2s ease-in-out infinite}
-@keyframes pulseAlert{0%,100%{box-shadow:0 0 0 0 rgba(232,80,58,.4)}50%{box-shadow:0 0 0 6px rgba(232,80,58,0)}}
-/* Estado loading do KPI */
-.card-kpi-val.loading{position:relative;color:transparent}
-.card-kpi-val.loading::after{content:'';position:absolute;inset:30% 25%;background:linear-gradient(90deg,rgba(255,255,255,.05),rgba(255,255,255,.15),rgba(255,255,255,.05));background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:3px}
-@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-/* Indicador de "ao vivo" mais sutil dentro do card */
-.card-live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:livePulse 1.6s ease-in-out infinite}
-@keyframes livePulse{0%,100%{opacity:1}50%{opacity:.4}}
+.app-card.disabled{opacity:.45;cursor:not-allowed;filter:grayscale(.4)}
+.app-card.disabled:hover{transform:none;border-color:var(--border);box-shadow:none}
 
 /* Updates */
 .updates-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
@@ -221,25 +240,37 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
     </div>
   </div>
 
-  <!-- HERO -->
+  <!-- HERO compacto -->
   <div class="hero">
-    <div class="hero-tag">🏭 Plataforma Interna</div>
-    <h1 class="hero-title">Central de<br><em>Ferramentas</em></h1>
-    <p class="hero-sub">Acesso rápido a todos os sistemas da equipe — pedidos, EPI, testes e visitas. Tudo em um único lugar com dados em tempo real.</p>
-    <div class="stats-row">
-      <div class="stat">
-        <div class="stat-val">7</div>
-        <div class="stat-lbl">Sistemas<br>Ativos</div>
+    <div class="hero-row">
+      <div class="hero-left">
+        <div class="hero-tag">🏭 Plataforma Interna · Vale S.A.</div>
+        <h1 class="hero-title">Central <em>Operacional</em></h1>
+        <p class="hero-sub">Visão consolidada de todos os sistemas da equipe Parauapebas. Dados em tempo real do Firebase.</p>
       </div>
-      <div class="stat-div"></div>
-      <div class="stat">
-        <div class="stat-val">Firebase</div>
-        <div class="stat-lbl">Tempo<br>Real</div>
+    </div>
+
+    <!-- KPI bar global: agregado de TODOS os sistemas -->
+    <div class="global-kpis">
+      <div class="global-kpi">
+        <div class="global-kpi-lbl">📊 Pedidos Em Aberto</div>
+        <div class="global-kpi-val gold loading" id="g-pedidos">—</div>
+        <div class="global-kpi-trend" id="g-pedidos-trend">de <span id="g-pedidos-tot">—</span> totais</div>
       </div>
-      <div class="stat-div"></div>
-      <div class="stat">
-        <div class="stat-val" id="stat-date">—</div>
-        <div class="stat-lbl">Data<br>Hoje</div>
+      <div class="global-kpi">
+        <div class="global-kpi-lbl">🔴 Alertas Críticos</div>
+        <div class="global-kpi-val warn loading" id="g-alertas">—</div>
+        <div class="global-kpi-trend">vencidos · est. baixo · atrasados</div>
+      </div>
+      <div class="global-kpi">
+        <div class="global-kpi-lbl">🟢 Sistemas Online</div>
+        <div class="global-kpi-val green" id="g-sistemas">7<span style="color:var(--muted);font-size:14px">/7</span></div>
+        <div class="global-kpi-trend">conectado ao Firebase</div>
+      </div>
+      <div class="global-kpi">
+        <div class="global-kpi-lbl">📅 Hoje</div>
+        <div class="global-kpi-val" id="g-data" style="font-size:16px">—</div>
+        <div class="global-kpi-trend" id="g-hora">—</div>
       </div>
     </div>
   </div>
@@ -257,125 +288,202 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
     <div class="apps-grid">
 
       <!-- PEDIDOS VALE -->
-      <a class="app-card" href="https://andreicosta8.github.io/pedidos-vale-ofc" target="_blank" style="--accent:var(--gold)">
-        <div class="card-top"><div class="card-icon">📊</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
-        <div class="card-title">BI · Pedidos Vale</div>
-        <div class="card-desc">Dashboard OTIFF · ONTIME · IN FULL. Pedidos, faturamento, prazos e tratativas.</div>
+      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/pedidos-vale-ofc')" style="--accent:var(--gold)">
+        <div class="card-top">
+          <div class="card-icon-wrap">
+            <div class="card-icon">📊</div>
+            <div class="card-titles">
+              <div class="card-title">BI · Pedidos Vale</div>
+              <div class="card-subtitle">Dashboard OTIFF</div>
+            </div>
+          </div>
+          <span class="card-badge badge-live"><span class="card-live-dot"></span>Live</span>
+        </div>
+        <div class="card-desc">Pedidos, faturamento, prazos e tratativas de devolução IN FULL.</div>
         <div class="card-kpis">
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-bi-otiff">—</div><div class="card-kpi-lbl">% OTIFF</div></div>
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-bi-aberto">—</div><div class="card-kpi-lbl">Em Aberto</div></div>
-          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-bi-vencidas">—</div><div class="card-kpi-lbl">⚠ Vencidas</div></div>
+          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-bi-vencidas">—</div><div class="card-kpi-lbl">Vencidas</div></div>
         </div>
-        <div class="card-shortcuts" onclick="event.stopPropagation()">
-          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=pedidos" target="_blank" rel="noopener">📋 Pedidos</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=tratativa" target="_blank" rel="noopener">⚡ Tratativa</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=evolucao" target="_blank" rel="noopener">📈 Evolução</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=ranking" target="_blank" rel="noopener">🏆 Ranking</a>
+        <div class="card-shortcuts">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=pedidos" target="_blank" rel="noopener" onclick="event.stopPropagation()">📋 Pedidos</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=tratativa" target="_blank" rel="noopener" onclick="event.stopPropagation()">⚡ Tratativa</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=evolucao" target="_blank" rel="noopener" onclick="event.stopPropagation()">📈 Evolução</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/pedidos-vale-ofc/?tab=ranking" target="_blank" rel="noopener" onclick="event.stopPropagation()">🏆 Ranking</a>
         </div>
-        <div class="card-footer"><div class="card-tags"><span class="tag">OTIFF</span><span class="tag">Firebase</span><span class="tag" id="tag-bi-total">— pedidos</span></div><span class="card-arrow">→</span></div>
-      </a>
+        <div class="card-footer">
+          <div class="card-meta" id="meta-bi">— pedidos · Firebase</div>
+          <div class="card-cta">Abrir <span>→</span></div>
+        </div>
+      </article>
 
       <!-- EPI MANAGER -->
-      <a class="app-card" href="https://andreicosta8.github.io/epi-manager" target="_blank" style="--accent:var(--green)">
-        <div class="card-top"><div class="card-icon">🦺</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
-        <div class="card-title">Gestão de Estoque EPI</div>
-        <div class="card-desc">Controle de estoque de EPIs, movimentações, alertas e relatórios.</div>
+      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/epi-manager')" style="--accent:var(--green)">
+        <div class="card-top">
+          <div class="card-icon-wrap">
+            <div class="card-icon">🦺</div>
+            <div class="card-titles">
+              <div class="card-title">Gestão de Estoque EPI</div>
+              <div class="card-subtitle">Controle de inventário</div>
+            </div>
+          </div>
+          <span class="card-badge badge-live"><span class="card-live-dot"></span>Live</span>
+        </div>
+        <div class="card-desc">Estoque de EPIs, movimentações, alertas de reposição e relatórios.</div>
         <div class="card-kpis">
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-epi-total">—</div><div class="card-kpi-lbl">Produtos</div></div>
-          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-epi-baixo">—</div><div class="card-kpi-lbl">⚠ Est. Baixo</div></div>
+          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-epi-baixo">—</div><div class="card-kpi-lbl">Est. Baixo</div></div>
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-epi-movs">—</div><div class="card-kpi-lbl">Movs. Mês</div></div>
         </div>
-        <div class="card-shortcuts" onclick="event.stopPropagation()">
-          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=products" target="_blank" rel="noopener">📦 Produtos</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=movements" target="_blank" rel="noopener">↔️ Movimentações</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=companies" target="_blank" rel="noopener">🏢 Empresas</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=reports" target="_blank" rel="noopener">📋 Relatórios</a>
+        <div class="card-shortcuts">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=products" target="_blank" rel="noopener" onclick="event.stopPropagation()">📦 Produtos</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=movements" target="_blank" rel="noopener" onclick="event.stopPropagation()">↔️ Movs.</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=companies" target="_blank" rel="noopener" onclick="event.stopPropagation()">🏢 Empresas</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/epi-manager/?tab=reports" target="_blank" rel="noopener" onclick="event.stopPropagation()">📋 Relatórios</a>
         </div>
-        <div class="card-footer"><div class="card-tags"><span class="tag">Estoque</span><span class="tag">Firebase</span><span class="tag">Alertas</span></div><span class="card-arrow">→</span></div>
-      </a>
+        <div class="card-footer">
+          <div class="card-meta">Estoque · Firebase</div>
+          <div class="card-cta">Abrir <span>→</span></div>
+        </div>
+      </article>
 
       <!-- UNILUVAS TESTES -->
-      <a class="app-card" href="https://andreicosta8.github.io/uniluvas_epi" target="_blank" style="--accent:var(--purple)">
-        <div class="card-top"><div class="card-icon">🧪</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
-        <div class="card-title">Uniluvas · Fichas de Teste</div>
-        <div class="card-desc">Plataforma de fichas de teste de EPIs. Resultados, aprovações e histórico.</div>
+      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/uniluvas_epi')" style="--accent:var(--purple)">
+        <div class="card-top">
+          <div class="card-icon-wrap">
+            <div class="card-icon">🧪</div>
+            <div class="card-titles">
+              <div class="card-title">Uniluvas · Fichas de Teste</div>
+              <div class="card-subtitle">Avaliações de EPIs</div>
+            </div>
+          </div>
+          <span class="card-badge badge-live"><span class="card-live-dot"></span>Live</span>
+        </div>
+        <div class="card-desc">Fichas de teste, resultados, aprovações SESMT e histórico por produto.</div>
         <div class="card-kpis">
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-uni-total">—</div><div class="card-kpi-lbl">Fichas</div></div>
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-uni-aprov">—</div><div class="card-kpi-lbl">Aprovadas</div></div>
-          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-uni-pend">—</div><div class="card-kpi-lbl">⏳ SESMT</div></div>
+          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-uni-pend">—</div><div class="card-kpi-lbl">P/ SESMT</div></div>
         </div>
-        <div class="card-shortcuts" onclick="event.stopPropagation()">
-          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=fichas" target="_blank" rel="noopener">📋 Fichas</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=relatorios" target="_blank" rel="noopener">📊 Relatórios</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=codigos" target="_blank" rel="noopener">🔑 Códigos</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=portais" target="_blank" rel="noopener">🚪 Portais</a>
+        <div class="card-shortcuts">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=fichas" target="_blank" rel="noopener" onclick="event.stopPropagation()">📋 Fichas</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=relatorios" target="_blank" rel="noopener" onclick="event.stopPropagation()">📊 Relatórios</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=codigos" target="_blank" rel="noopener" onclick="event.stopPropagation()">🔑 Códigos</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/uniluvas_epi/?tab=portais" target="_blank" rel="noopener" onclick="event.stopPropagation()">🚪 Portais</a>
         </div>
-        <div class="card-footer"><div class="card-tags"><span class="tag">Testes</span><span class="tag">Firebase</span><span class="tag">EmailJS</span></div><span class="card-arrow">→</span></div>
-      </a>
+        <div class="card-footer">
+          <div class="card-meta">Testes · Firebase · EmailJS</div>
+          <div class="card-cta">Abrir <span>→</span></div>
+        </div>
+      </article>
 
       <!-- VISITAS PRO -->
-      <a class="app-card" href="https://andreicosta8.github.io/visitaspro" target="_blank" style="--accent:var(--blue)">
-        <div class="card-top"><div class="card-icon">🗺️</div><span class="card-badge badge-mobile">📱 Mobile</span></div>
-        <div class="card-title">VisitasPRO</div>
-        <div class="card-desc">Controle pessoal de visitas a clientes. Agendamento, histórico e relatórios.</div>
+      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/visitaspro')" style="--accent:var(--blue)">
+        <div class="card-top">
+          <div class="card-icon-wrap">
+            <div class="card-icon">🗺️</div>
+            <div class="card-titles">
+              <div class="card-title">VisitasPRO</div>
+              <div class="card-subtitle">CRM de visitas</div>
+            </div>
+          </div>
+          <span class="card-badge badge-mobile">📱 Mobile</span>
+        </div>
+        <div class="card-desc">Agendamento e histórico de visitas a clientes com integração WhatsApp.</div>
         <div class="card-kpis">
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-vp-agend">—</div><div class="card-kpi-lbl">Agendadas</div></div>
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-vp-real">—</div><div class="card-kpi-lbl">Realizadas</div></div>
-          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-vp-atras">—</div><div class="card-kpi-lbl">⚠ Atrasadas</div></div>
+          <div class="card-kpi"><div class="card-kpi-val warn loading" id="kpi-vp-atras">—</div><div class="card-kpi-lbl">Atrasadas</div></div>
         </div>
-        <div class="card-shortcuts" onclick="event.stopPropagation()">
-          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=visits" target="_blank" rel="noopener">📅 Visitas</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=form" target="_blank" rel="noopener">➕ Nova</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=clients" target="_blank" rel="noopener">👥 Clientes</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=report" target="_blank" rel="noopener">📊 Relatório</a>
+        <div class="card-shortcuts">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=visits" target="_blank" rel="noopener" onclick="event.stopPropagation()">📅 Visitas</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=form" target="_blank" rel="noopener" onclick="event.stopPropagation()">➕ Nova</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=clients" target="_blank" rel="noopener" onclick="event.stopPropagation()">👥 Clientes</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/visitaspro/?tab=report" target="_blank" rel="noopener" onclick="event.stopPropagation()">📊 Relatório</a>
         </div>
-        <div class="card-footer"><div class="card-tags"><span class="tag">Visitas</span><span class="tag">Firebase</span><span class="tag">WhatsApp</span></div><span class="card-arrow">→</span></div>
-      </a>
+        <div class="card-footer">
+          <div class="card-meta">Visitas · Firebase · WhatsApp</div>
+          <div class="card-cta">Abrir <span>→</span></div>
+        </div>
+      </article>
 
       <!-- QUIZ EPI ADMIN -->
-      <a class="app-card" href="https://andreicosta8.github.io/sipatmin/banca-admin" target="_blank" style="--accent:#e8503a">
-        <div class="card-top"><div class="card-icon">🎮</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
-        <div class="card-title">Quiz EPI · Admin</div>
-        <div class="card-desc">Painel do apresentador. Inicie quiz, controle perguntas e revele respostas.</div>
+      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/sipatmin/banca-admin')" style="--accent:#e8503a">
+        <div class="card-top">
+          <div class="card-icon-wrap">
+            <div class="card-icon">🎮</div>
+            <div class="card-titles">
+              <div class="card-title">Quiz EPI · Admin</div>
+              <div class="card-subtitle">Painel apresentador</div>
+            </div>
+          </div>
+          <span class="card-badge badge-live"><span class="card-live-dot"></span>Live</span>
+        </div>
+        <div class="card-desc">Inicie quiz, controle perguntas e revele respostas em multiplayer ao vivo.</div>
         <div class="card-kpis">
-          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qa-sala">—</div><div class="card-kpi-lbl">Sala Ativa</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qa-sala">—</div><div class="card-kpi-lbl">Sala</div></div>
           <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qa-jog">—</div><div class="card-kpi-lbl">Jogadores</div></div>
           <div class="card-kpi"><div class="card-kpi-val muted" id="kpi-qa-status">—</div><div class="card-kpi-lbl">Status</div></div>
         </div>
-        <div class="card-footer"><div class="card-tags"><span class="tag">Apresentador</span><span class="tag">Firebase</span><span class="tag">Desktop</span></div><span class="card-arrow">→</span></div>
-      </a>
+        <div class="card-footer">
+          <div class="card-meta">Apresentador · Desktop</div>
+          <div class="card-cta">Abrir <span>→</span></div>
+        </div>
+      </article>
 
       <!-- QUIZ EPI JOGADOR -->
-      <a class="app-card" href="https://andreicosta8.github.io/sipatmin/banca" target="_blank" style="--accent:#22c97a">
-        <div class="card-top"><div class="card-icon">🧤</div><span class="card-badge badge-mobile">📱 Mobile</span></div>
-        <div class="card-title">Quiz EPI · Jogador</div>
-        <div class="card-desc">App mobile para entrar no quiz. Escaneie o QR ou acesse pelo link direto.</div>
-        <div class="card-kpis">
-          <div class="card-kpi"><div class="card-kpi-val muted" id="kpi-qj-status">—</div><div class="card-kpi-lbl">Quiz Hoje</div></div>
-          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qj-sala">—</div><div class="card-kpi-lbl">Sala</div></div>
-          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qj-conec">—</div><div class="card-kpi-lbl">Conectados</div></div>
+      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/sipatmin/banca')" style="--accent:#22c97a">
+        <div class="card-top">
+          <div class="card-icon-wrap">
+            <div class="card-icon">🧤</div>
+            <div class="card-titles">
+              <div class="card-title">Quiz EPI · Jogador</div>
+              <div class="card-subtitle">App jogador mobile</div>
+            </div>
+          </div>
+          <span class="card-badge badge-mobile">📱 Mobile</span>
         </div>
-        <div class="card-footer"><div class="card-tags"><span class="tag">Jogador</span><span class="tag">Firebase</span><span class="tag">Mobile</span></div><span class="card-arrow">→</span></div>
-      </a>
+        <div class="card-desc">Entre no quiz pelo QR Code ou link direto. Compete ao vivo com ranking.</div>
+        <div class="card-kpis">
+          <div class="card-kpi"><div class="card-kpi-val muted" id="kpi-qj-status">—</div><div class="card-kpi-lbl">Quiz</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qj-sala">—</div><div class="card-kpi-lbl">Sala</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qj-conec">—</div><div class="card-kpi-lbl">Online</div></div>
+        </div>
+        <div class="card-footer">
+          <div class="card-meta">Jogador · Firebase · Mobile</div>
+          <div class="card-cta">Abrir <span>→</span></div>
+        </div>
+      </article>
 
       <!-- CATÁLOGO UNILUVAS -->
-      <a class="app-card" href="https://andreicosta8.github.io/catalogo-uniluvas" target="_blank" style="--accent:var(--amber)">
-        <div class="card-top"><div class="card-icon">📘</div><span class="card-badge badge-live"><span class="card-live-dot"></span>Ao vivo</span></div>
-        <div class="card-title">Catálogo Uniluvas</div>
-        <div class="card-desc">Catálogo digital com 17 EPIs, fichas técnicas, normas e CAs. Compartilhável via WhatsApp.</div>
+      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/catalogo-uniluvas')" style="--accent:var(--amber)">
+        <div class="card-top">
+          <div class="card-icon-wrap">
+            <div class="card-icon">📘</div>
+            <div class="card-titles">
+              <div class="card-title">Catálogo Uniluvas</div>
+              <div class="card-subtitle">Catálogo público</div>
+            </div>
+          </div>
+          <span class="card-badge badge-static">🌐 Público</span>
+        </div>
+        <div class="card-desc">17 EPIs com fichas técnicas, normas e CAs. Compartilhável via WhatsApp.</div>
         <div class="card-kpis">
           <div class="card-kpi"><div class="card-kpi-val">17</div><div class="card-kpi-lbl">EPIs</div></div>
           <div class="card-kpi"><div class="card-kpi-val">12</div><div class="card-kpi-lbl">Normas</div></div>
           <div class="card-kpi"><div class="card-kpi-val">3</div><div class="card-kpi-lbl">⭐ Top</div></div>
         </div>
-        <div class="card-shortcuts" onclick="event.stopPropagation()">
-          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#sobre" target="_blank" rel="noopener">🏢 A Empresa</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#epis" target="_blank" rel="noopener">🛡️ EPIs</a>
-          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#normas" target="_blank" rel="noopener">📋 Normas</a>
-          <a class="card-shortcut" href="https://wa.me/559491126215?text=Vim%20pelo%20workspace" target="_blank" rel="noopener">💬 Especialista</a>
+        <div class="card-shortcuts">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#sobre" target="_blank" rel="noopener" onclick="event.stopPropagation()">🏢 Empresa</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#epis" target="_blank" rel="noopener" onclick="event.stopPropagation()">🛡️ EPIs</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/catalogo-uniluvas#normas" target="_blank" rel="noopener" onclick="event.stopPropagation()">📋 Normas</a>
+          <a class="card-shortcut" href="https://wa.me/559491126215?text=Vim%20pelo%20workspace" target="_blank" rel="noopener" onclick="event.stopPropagation()">💬 Falar</a>
         </div>
-        <div class="card-footer"><div class="card-tags"><span class="tag">17 EPIs</span><span class="tag">Público</span><span class="tag">Mobile</span></div><span class="card-arrow">→</span></div>
-      </a>
+        <div class="card-footer">
+          <div class="card-meta">Estático · Compartilhável</div>
+          <div class="card-cta">Abrir <span>→</span></div>
+        </div>
+      </article>
 
     </div>
 
@@ -506,7 +614,19 @@ function showPortal(user){
   const now = new Date();
   const dateStr = now.toLocaleDateString('pt-BR', {day:'2-digit',month:'short',year:'numeric'});
   document.getElementById('tb-date').textContent = dateStr;
-  document.getElementById('stat-date').textContent = now.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  // KPI Hoje no header global
+  const dataEl = document.getElementById('g-data');
+  const horaEl = document.getElementById('g-hora');
+  function tickClock(){
+    const d = new Date();
+    if(dataEl){
+      dataEl.classList.remove('loading');
+      dataEl.textContent = d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'}).toUpperCase();
+    }
+    if(horaEl) horaEl.textContent = d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  }
+  tickClock();
+  setInterval(tickClock, 30000); // atualiza a cada 30s
   // ✨ Inicia os mini-dashboards Firebase em tempo real
   mountKPIs();
 }
@@ -530,6 +650,20 @@ try {
   const uniApp = firebase.initializeApp(uniConfig, 'uniluvas');
   dbUni = uniApp.database();
 } catch(e){ console.warn('Uniluvas Firebase indisponível:', e); }
+
+// Função chamada pelo onclick="" dos cards <article> (substitui o <a> do v3)
+function openApp(url){
+  window.open(url, '_blank', 'noopener');
+}
+
+// Estado global para agregação dos KPIs do header
+const G = { pedidosAberto: 0, pedidosTotal: 0, alertasVencidos: 0, alertasEstoque: 0, alertasAtrasadas: 0 };
+function refreshGlobalKPIs(){
+  setKpi('g-pedidos', fmtNum(G.pedidosAberto));
+  const tot = document.getElementById('g-pedidos-tot'); if(tot) tot.textContent = fmtNum(G.pedidosTotal);
+  const alertasTotal = G.alertasVencidos + G.alertasEstoque + G.alertasAtrasadas;
+  setKpi('g-alertas', fmtNum(alertasTotal), {warn:true});
+}
 
 // Helper: define o valor de um KPI e remove o estado loading
 function setKpi(id, value, opts={}){
@@ -580,8 +714,13 @@ function mountKPIs(){
     setKpi('kpi-bi-otiff', otiff);
     setKpi('kpi-bi-aberto', fmtNum(emAberto));
     setKpi('kpi-bi-vencidas', fmtNum(vencidas), {warn:true});
-    const tagEl = document.getElementById('tag-bi-total');
-    if(tagEl) tagEl.textContent = total + ' pedidos';
+    // Alimenta KPI bar global do header
+    G.pedidosAberto = emAberto;
+    G.pedidosTotal = total;
+    G.alertasVencidos = vencidas;
+    refreshGlobalKPIs();
+    const metaEl = document.getElementById('meta-bi');
+    if(metaEl) metaEl.textContent = total + ' pedidos · Firebase';
   }, err => console.warn('Erro pedidos_vale:', err));
 
   // ─── 2) EPI MANAGER ────────────────────────────────────
@@ -599,6 +738,8 @@ function mountKPIs(){
     }).length;
     setKpi('kpi-epi-total', fmtNum(total));
     setKpi('kpi-epi-baixo', fmtNum(baixo), {warn:true});
+    G.alertasEstoque = baixo;
+    refreshGlobalKPIs();
   }, err => console.warn('Erro epis:', err));
 
   // Movimentações no mês corrente
@@ -620,7 +761,10 @@ function mountKPIs(){
     const cnt = (status) => visits.filter(v => v && v.status === status).length;
     setKpi('kpi-vp-agend', fmtNum(cnt('Agendada')));
     setKpi('kpi-vp-real', fmtNum(cnt('Realizada')));
-    setKpi('kpi-vp-atras', fmtNum(cnt('Atrasada')), {warn:true});
+    const atrasadas = cnt('Atrasada');
+    setKpi('kpi-vp-atras', fmtNum(atrasadas), {warn:true});
+    G.alertasAtrasadas = atrasadas;
+    refreshGlobalKPIs();
   }, err => console.warn('Erro visits:', err));
 
   // ─── 4) QUIZ ADMIN + JOGADOR ───────────────────────────
