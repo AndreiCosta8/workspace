@@ -634,20 +634,48 @@ function showPortal(user){
 // ══════════════════════════════════════════════════════════════════
 // 📡 MINI-DASHBOARDS FIREBASE EM TEMPO REAL
 // ══════════════════════════════════════════════════════════════════
-// Reusa a instância padrão do Firebase (config no topo do <script>) para os apps
-// que gravam em "pedidos-vale-default-rtdb": BI Pedidos, EPI Manager, VisitasPRO, Quiz.
-// Para o Uniluvas Testes (banco SEPARADO), inicializa uma 2ª app nomeada.
+// Cada app tem seu PRÓPRIO projeto Firebase. O workspace lê dos 4:
+//   • dbMain (pedidos-vale)        → /pedidos_vale (BI), /sipatmin (Quiz)
+//   • dbEpi  (epi-parauapebas)     → /epis, /movimentos
+//   • dbVis  (visitaspro-2413a)    → /visits
+//   • dbUni  (uniluvas-teste)      → /tests
+// Rules dos 3 secundários precisam ter ".read": true (leitura pública).
 const dbMain = firebase.database();
 
-// 2ª instância Firebase só para o Uniluvas Testes (banco diferente)
+// 🟧 EPI Manager (banco próprio)
+let dbEpi = null;
+try {
+  const epiApp = firebase.initializeApp({
+    apiKey: "AIzaSyCQbP8V9oUDH-WfjhHZrZ0Zpxwpxv8TpS8",
+    authDomain: "epi-parauapebas.firebaseapp.com",
+    databaseURL: "https://epi-parauapebas-default-rtdb.firebaseio.com",
+    projectId: "epi-parauapebas",
+    appId: "1:1046950789657:web:e4d51d940d2d857b3fa088"
+  }, 'epi');
+  dbEpi = epiApp.database();
+} catch(e){ console.warn('EPI Firebase indisponível:', e); }
+
+// 🔵 VisitasPRO (banco próprio)
+let dbVis = null;
+try {
+  const visApp = firebase.initializeApp({
+    apiKey: "AIzaSyAP3eGk560s22KWpS3wZY_alSC0Kx9quUM",
+    authDomain: "visitaspro-2413a.firebaseapp.com",
+    databaseURL: "https://visitaspro-2413a-default-rtdb.firebaseio.com",
+    projectId: "visitaspro-2413a",
+    appId: "1:408385222289:web:9022ef9bd15582f1cef130"
+  }, 'visitas');
+  dbVis = visApp.database();
+} catch(e){ console.warn('VisitasPRO Firebase indisponível:', e); }
+
+// 🟣 Uniluvas Testes (banco próprio)
 let dbUni = null;
 try {
-  const uniConfig = {
-    apiKey: firebaseConfig.apiKey,  // mesma key — leitura pública
-    databaseURL: "https://uniluvas-teste-default-rtdb.firebaseio.com",  // ⚠️ TROCAR se sua URL for outra
-    projectId: firebaseConfig.projectId,
-  };
-  const uniApp = firebase.initializeApp(uniConfig, 'uniluvas');
+  const uniApp = firebase.initializeApp({
+    apiKey: firebaseConfig.apiKey,
+    databaseURL: "https://uniluvas-teste-default-rtdb.firebaseio.com",
+    projectId: "uniluvas-teste"
+  }, 'uniluvas');
   dbUni = uniApp.database();
 } catch(e){ console.warn('Uniluvas Firebase indisponível:', e); }
 
@@ -737,7 +765,11 @@ function mountKPIs(){
   // ─── 2) EPI MANAGER ────────────────────────────────────
   // ESTRUTURA REAL: /epis/{id}/{at, mx, n, ...} - at=atual, mx=máximo
   // Estoque baixo (do app: linha 544): at/mx < 0.3
-  dbMain.ref('epis').on('value', snap => {
+  // ⚠️ Banco PRÓPRIO (epi-parauapebas), não compartilhado
+  if(!dbEpi){
+    setKpi('kpi-epi-total','—'); setKpi('kpi-epi-baixo','—'); setKpi('kpi-epi-movs','—');
+  } else {
+  dbEpi.ref('epis').on('value', snap => {
     const data = snap.val() || {};
     const produtos = Object.values(data).filter(p => p && p.n);
     const total = produtos.length;
@@ -749,37 +781,40 @@ function mountKPIs(){
     setKpi('kpi-epi-baixo', fmtNum(baixo), {warn:true});
     G.alertasEstoque = baixo;
     refreshGlobalKPIs();
-  }, err => console.warn('Erro epis:', err));
+  }, err => { console.warn('Erro epis:', err); setKpi('kpi-epi-total','—'); setKpi('kpi-epi-baixo','—'); });
 
   // Movimentações no mês corrente
   // ESTRUTURA: /movimentos/{id}/{io, dt|data|ts, ...}
-  dbMain.ref('movimentos').on('value', snap => {
+  dbEpi.ref('movimentos').on('value', snap => {
     const data = snap.val() || {};
     const movs = Object.values(data);
     const hoje = new Date();
     const ano = hoje.getFullYear(), mes = String(hoje.getMonth()+1).padStart(2,'0');
     const prefixo = ano+'-'+mes;
-    // Tenta vários campos comuns de data
     const noMes = movs.filter(m => {
       if(!m) return false;
       const d = (m.dt || m.data || m.ts || '').toString();
       return d.startsWith(prefixo);
     }).length;
     setKpi('kpi-epi-movs', fmtNum(noMes));
-  }, err => console.warn('Erro movimentos:', err));
+  }, err => { console.warn('Erro movimentos:', err); setKpi('kpi-epi-movs','—'); });
+  }
 
   // ─── 3) VISITAS PRO ────────────────────────────────────
   // ESTRUTURA REAL: /visits/{id}/{data, status, funcionario, cliente, ...}
   // Status reais: "Agendada" | "Realizada" | "Cancelada" | "Reagendada"
   // Atrasadas: status "Agendada" + data já passou
-  dbMain.ref('visits').on('value', snap => {
+  // ⚠️ Banco PRÓPRIO (visitaspro-2413a), não compartilhado
+  if(!dbVis){
+    setKpi('kpi-vp-agend','—'); setKpi('kpi-vp-real','—'); setKpi('kpi-vp-atras','—');
+  } else {
+  dbVis.ref('visits').on('value', snap => {
     const data = snap.val() || {};
     const visits = Object.values(data);
     const hojeStr = new Date().toISOString().slice(0,10);
     const cnt = (status) => visits.filter(v => v && v.status === status).length;
     const agendadas = cnt('Agendada');
     const realizadas = cnt('Realizada');
-    // Atrasadas: agendadas com data no passado (ainda não realizadas/canceladas)
     const atrasadas = visits.filter(v =>
       v && v.status === 'Agendada' && v.data && v.data < hojeStr
     ).length;
@@ -788,7 +823,8 @@ function mountKPIs(){
     setKpi('kpi-vp-atras', fmtNum(atrasadas), {warn:true});
     G.alertasAtrasadas = atrasadas;
     refreshGlobalKPIs();
-  }, err => console.warn('Erro visits:', err));
+  }, err => { console.warn('Erro visits:', err); setKpi('kpi-vp-agend','—'); setKpi('kpi-vp-real','—'); setKpi('kpi-vp-atras','—'); });
+  }
 
   // ─── 4) QUIZ ADMIN + JOGADOR ───────────────────────────
   // Path: /sipatmin/activeRoom (string com código da sala) e /sipatmin/{sala}/players
