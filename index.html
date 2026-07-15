@@ -453,7 +453,7 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
     <div class="sec-head">
       <div class="sec-title">Sistemas Disponíveis</div>
       <div class="sec-line"></div>
-      <div class="sec-count">7 ativos</div>
+      <div class="sec-count">6 ativos</div>
     </div>
 
     <div class="apps-grid">
@@ -578,50 +578,32 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
         </div>
       </article>
 
-      <!-- QUIZ EPI ADMIN -->
-      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/sipatmin/banca-admin')" style="--accent:#e8503a">
+      <!-- CENTRAL DE JOGOS -->
+      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/sipatmin/central-admin.html')" style="--accent:#e8503a">
         <div class="card-top">
           <div class="card-icon-wrap">
             <div class="card-icon">🎮</div>
             <div class="card-titles">
-              <div class="card-title">Quiz EPI · Admin</div>
-              <div class="card-subtitle">Painel apresentador</div>
+              <div class="card-title">Central de Jogos · EPI</div>
+              <div class="card-subtitle">Quiz · Memória · Multiplayer</div>
             </div>
           </div>
           <span class="card-badge badge-live"><span class="card-live-dot"></span>Live</span>
         </div>
-        <div class="card-desc">Inicie quiz, controle perguntas e revele respostas em multiplayer ao vivo.</div>
+        <div class="card-desc">Controle todos os jogos de segurança em um só painel. Largada sincronizada e ranking ao vivo.</div>
         <div class="card-kpis">
-          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qa-sala">—</div><div class="card-kpi-lbl">Sala</div></div>
-          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qa-jog">—</div><div class="card-kpi-lbl">Jogadores</div></div>
-          <div class="card-kpi"><div class="card-kpi-val muted" id="kpi-qa-status">—</div><div class="card-kpi-lbl">Status</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-cj-sala">—</div><div class="card-kpi-lbl">Sala</div></div>
+          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-cj-jog">—</div><div class="card-kpi-lbl">Jogadores</div></div>
+          <div class="card-kpi"><div class="card-kpi-val muted" id="kpi-cj-jogo">—</div><div class="card-kpi-lbl">Jogo ativo</div></div>
+        </div>
+        <div class="card-shortcuts">
+          <a class="card-shortcut" href="https://andreicosta8.github.io/sipatmin/central-admin.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">🎯 Central</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/sipatmin/aguarde.html?sala=SIPAT-PA" target="_blank" rel="noopener" onclick="event.stopPropagation()">📱 Entrar</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/sipatmin/banca.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">❓ Quiz</a>
+          <a class="card-shortcut" href="https://andreicosta8.github.io/sipatmin/memoria.html" target="_blank" rel="noopener" onclick="event.stopPropagation()">🃏 Memória</a>
         </div>
         <div class="card-footer">
-          <div class="card-meta">Apresentador · Desktop</div>
-          <div class="card-cta">Abrir <span>→</span></div>
-        </div>
-      </article>
-
-      <!-- QUIZ EPI JOGADOR -->
-      <article class="app-card" onclick="openApp('https://andreicosta8.github.io/sipatmin/banca')" style="--accent:#22c97a">
-        <div class="card-top">
-          <div class="card-icon-wrap">
-            <div class="card-icon">🧤</div>
-            <div class="card-titles">
-              <div class="card-title">Quiz EPI · Jogador</div>
-              <div class="card-subtitle">App jogador mobile</div>
-            </div>
-          </div>
-          <span class="card-badge badge-mobile">📱 Mobile</span>
-        </div>
-        <div class="card-desc">Entre no quiz pelo QR Code ou link direto. Compete ao vivo com ranking.</div>
-        <div class="card-kpis">
-          <div class="card-kpi"><div class="card-kpi-val muted" id="kpi-qj-status">—</div><div class="card-kpi-lbl">Quiz</div></div>
-          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qj-sala">—</div><div class="card-kpi-lbl">Sala</div></div>
-          <div class="card-kpi"><div class="card-kpi-val loading" id="kpi-qj-conec">—</div><div class="card-kpi-lbl">Online</div></div>
-        </div>
-        <div class="card-footer">
-          <div class="card-meta">Jogador · Firebase · Mobile</div>
+          <div class="card-meta">Apresentador · Firebase · Multiplayer</div>
           <div class="card-cta">Abrir <span>→</span></div>
         </div>
       </article>
@@ -664,6 +646,14 @@ body{font-family:'Sora',sans-serif;background:var(--navy);color:var(--text);min-
       <div class="sec-line"></div>
     </div>
     <div class="updates-grid">
+      <div class="update-item">
+        <div class="update-dot" style="background:#e8503a"></div>
+        <div class="update-text">
+          <strong>Central de Jogos · EPI</strong>
+          Painel único para todos os jogos · Sala de espera universal com redirecionamento automático · Largada sincronizada multiplayer · Quiz (30 perguntas) + Memória (fotos de campo) · Projeto Firebase isolado
+          <div class="update-time">Jul 2026</div>
+        </div>
+      </div>
       <div class="update-item">
         <div class="update-dot" style="background:var(--amber)"></div>
         <div class="update-text">
@@ -836,6 +826,21 @@ try {
   dbUni = uniApp.database();
 } catch(e){ console.warn('Uniluvas Firebase indisponível:', e); }
 
+// Central de Jogos — projeto próprio (isolado do pedidos-vale)
+let dbJogos = null;
+try {
+  const jogosApp = firebase.initializeApp({
+    apiKey: "AIzaSyCizjgUCO2SXI6ozqjYmuj2LhJm1i0Rx28",
+    authDomain: "sipatmin-uniluvas-c0c3d.firebaseapp.com",
+    databaseURL: "https://sipatmin-uniluvas-c0c3d-default-rtdb.firebaseio.com",
+    projectId: "sipatmin-uniluvas-c0c3d",
+    storageBucket: "sipatmin-uniluvas-c0c3d.firebasestorage.app",
+    messagingSenderId: "764249882558",
+    appId: "1:764249882558:web:c10e3c0eb72f0b484183ef"
+  }, 'jogos');
+  dbJogos = jogosApp.database();
+} catch(e){ console.warn('Jogos Firebase indisponível:', e); }
+
 function openApp(url){
   window.open(url, '_blank', 'noopener');
 }
@@ -957,31 +962,41 @@ function mountKPIs(){
   }, err => { console.warn('Erro visits:', err); setKpi('kpi-vp-agend','—'); setKpi('kpi-vp-real','—'); setKpi('kpi-vp-atras','—'); });
   }
 
-  // ─── 4) QUIZ ADMIN + JOGADOR ───────────────────────────
-  dbMain.ref('sipatmin/activeRoom').on('value', snap => {
-    const sala = snap.val();
-    if(sala){
-      setKpi('kpi-qa-sala', sala);
-      setKpi('kpi-qj-sala', sala);
-      setKpi('kpi-qj-status', '🟢 Ativo', {muted:true});
-      dbMain.ref('sipatmin/'+sala+'/players').once('value').then(s2 => {
-        const n = s2.val() ? Object.keys(s2.val()).length : 0;
-        setKpi('kpi-qa-jog', n);
-        setKpi('kpi-qj-conec', n);
+  // ─── 4) CENTRAL DE JOGOS ────────────────────────────────
+  // Varre todas as salas e mostra a que tem jogadores ativos
+  const NOMES_JOGOS = { quiz:'Quiz EPI', memoria:'Memória', corrida:'Corrida' };
+  if(dbJogos){
+    dbJogos.ref('sipatmin').on('value', snap => {
+      const todas = snap.val() || {};
+      let salaAtiva = null, maxJog = 0, totalJog = 0, jogoAtivo = null;
+
+      Object.entries(todas).forEach(([sala, dados]) => {
+        if(!dados || typeof dados !== 'object') return;
+        const jogadores = dados.players ? Object.keys(dados.players).length : 0;
+        totalJog += jogadores;
+        if(jogadores > maxJog){
+          maxJog = jogadores;
+          salaAtiva = sala;
+          jogoAtivo = dados.activeGame || null;
+        }
       });
-      dbMain.ref('sipatmin/'+sala+'/session').once('value').then(s3 => {
-        const sess = s3.val() || {};
-        setKpi('kpi-qa-status', sess.active ? 'Em jogo' : 'Lobby', {muted:true});
-      });
-    } else {
-      setKpi('kpi-qa-sala', '—');
-      setKpi('kpi-qa-jog', '0');
-      setKpi('kpi-qa-status', 'Sem sala', {muted:true});
-      setKpi('kpi-qj-status', 'Inativo', {muted:true});
-      setKpi('kpi-qj-sala', '—');
-      setKpi('kpi-qj-conec', '0');
-    }
-  }, err => console.warn('Erro sipatmin:', err));
+
+      if(salaAtiva && maxJog > 0){
+        setKpi('kpi-cj-sala', salaAtiva);
+        setKpi('kpi-cj-jog', totalJog);
+        setKpi('kpi-cj-jogo', jogoAtivo ? (NOMES_JOGOS[jogoAtivo] || jogoAtivo) : 'Lobby', {muted:true});
+      } else {
+        setKpi('kpi-cj-sala', '—');
+        setKpi('kpi-cj-jog', '0');
+        setKpi('kpi-cj-jogo', 'Inativo', {muted:true});
+      }
+    }, err => {
+      console.warn('Erro Central de Jogos:', err);
+      setKpi('kpi-cj-sala', '—'); setKpi('kpi-cj-jog', '—'); setKpi('kpi-cj-jogo', '—');
+    });
+  } else {
+    setKpi('kpi-cj-sala', '—'); setKpi('kpi-cj-jog', '—'); setKpi('kpi-cj-jogo', '—');
+  }
 
   // ─── 5) UNILUVAS TESTES ─────────────────────────────────
   if(dbUni){
